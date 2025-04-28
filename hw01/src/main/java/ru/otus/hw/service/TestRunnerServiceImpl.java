@@ -15,7 +15,7 @@ public class TestRunnerServiceImpl implements TestRunnerService {
         try {
             testService.executeTest();
         } catch (QuestionReadException e) {
-            ioService.printLine("Ошибка при чтении csv-файла");
+            ioService.printLine("Error reading csv file");
         }
     }
 }
