@@ -50,7 +50,9 @@ class TestServiceImplTest {
                 ));
         given(questionDao.findAll()).willReturn(questions);
         willDoNothing().given(ioService).printLine(strCaptor.capture());
+
         testService.executeTest();
+
         verify(questionDao, times(1)).findAll();
         verify(ioService, times(1)).printFormattedLine(any());
         verify(ioService, times(11)).printLine(any(String.class));
@@ -69,7 +71,9 @@ class TestServiceImplTest {
     void shouldCorrectExecuteTestWithEmptyListOfQuestions() {
         given(questionDao.findAll()).willReturn(Collections.emptyList());
         InOrder inOrder = inOrder(ioService, questionDao);
+
         testService.executeTest();
+
         inOrder.verify(ioService, times(1)).printLine(any());
         inOrder.verify(ioService, times(1)).printFormattedLine(any());
         inOrder.verify(questionDao, times(1)).findAll();

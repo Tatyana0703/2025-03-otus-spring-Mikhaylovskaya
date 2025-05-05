@@ -10,8 +10,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.List;
-import java.util.Objects;
 import java.util.stream.Collectors;
+import static java.util.Objects.isNull;
+import static java.util.Objects.requireNonNull;
 
 @RequiredArgsConstructor
 public class CsvQuestionDao implements QuestionDao {
@@ -20,9 +21,13 @@ public class CsvQuestionDao implements QuestionDao {
     @Override
     public List<Question> findAll() {
         var filename = fileNameProvider.getTestFileName();
+        if (isNull(CsvQuestionDao.class.getClassLoader().getResource(filename))) {
+            throw new QuestionReadException(String.format("Resource %s not found", filename));
+        }
+
         List<QuestionDto> parseQuestions;
         try (InputStream inputStream = CsvQuestionDao.class.getClassLoader().getResourceAsStream(filename);
-             InputStreamReader inputStreamReader = new InputStreamReader(Objects.requireNonNull(inputStream))) {
+             InputStreamReader inputStreamReader = new InputStreamReader(requireNonNull(inputStream))) {
             parseQuestions = new CsvToBeanBuilder<QuestionDto>(inputStreamReader)
                     .withType(QuestionDto.class)
                     .withSeparator(';')

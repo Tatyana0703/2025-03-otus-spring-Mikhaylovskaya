@@ -2,6 +2,9 @@ package ru.otus.hw.service;
 
 import lombok.RequiredArgsConstructor;
 import ru.otus.hw.dao.QuestionDao;
+import ru.otus.hw.domain.Question;
+
+import java.util.List;
 
 @RequiredArgsConstructor
 public class TestServiceImpl implements TestService {
@@ -15,11 +18,15 @@ public class TestServiceImpl implements TestService {
         ioService.printLine("");
         ioService.printFormattedLine("Please answer the questions below%n");
         var testQuestions = questionDao.findAll();
-        testQuestions.forEach(question -> {
+        printAllQuestions(testQuestions);
+    }
+
+    private void printAllQuestions(List<Question> questions) {
+        questions.forEach(question -> {
             ioService.printLine(question.text());
             ioService.printLine("Answers:");
             question.answers().forEach(answer ->
-                ioService.printLine(answer.text())
+                    ioService.printLine(answer.text())
             );
             ioService.printLine("");
         });
