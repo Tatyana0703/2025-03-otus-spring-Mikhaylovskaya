@@ -10,9 +10,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.List;
-import java.util.stream.Collectors;
 import static java.util.Objects.isNull;
-import static java.util.Objects.requireNonNull;
 
 @RequiredArgsConstructor
 public class CsvQuestionDao implements QuestionDao {
@@ -21,25 +19,24 @@ public class CsvQuestionDao implements QuestionDao {
     @Override
     public List<Question> findAll() {
         var filename = fileNameProvider.getTestFileName();
-        if (isNull(CsvQuestionDao.class.getClassLoader().getResource(filename))) {
+
+        InputStream inputStream = CsvQuestionDao.class.getClassLoader().getResourceAsStream(filename);
+        if (isNull(inputStream)) {
             throw new QuestionReadException(String.format("Resource %s not found", filename));
         }
 
-        List<QuestionDto> parseQuestions;
-        try (InputStream inputStream = CsvQuestionDao.class.getClassLoader().getResourceAsStream(filename);
-             InputStreamReader inputStreamReader = new InputStreamReader(requireNonNull(inputStream))) {
-            parseQuestions = new CsvToBeanBuilder<QuestionDto>(inputStreamReader)
+        try (InputStreamReader inputStreamReader = new InputStreamReader(inputStream)) {
+            return new CsvToBeanBuilder<QuestionDto>(inputStreamReader)
                     .withType(QuestionDto.class)
                     .withSeparator(';')
                     .withSkipLines(1)
                     .build()
-                    .parse();
+                    .parse()
+                    .stream()
+                    .map(QuestionDto::toDomainObject)
+                    .toList();
         } catch (IOException e) {
             throw new QuestionReadException(String.format("Error reading file %s", filename), e);
         }
-
-        return parseQuestions.stream()
-                .map(QuestionDto::toDomainObject)
-                .collect(Collectors.toUnmodifiableList());
     }
 }
