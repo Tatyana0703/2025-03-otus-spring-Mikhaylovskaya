@@ -24,7 +24,7 @@ public class TestServiceImpl implements TestService {
 
         for (var question: questions) {
             askQuestion(question);
-            var isAnswerValid = isInputAnswerValid(question);
+            var isAnswerValid = readAndValidateAnswerFor(question);
             testResult.applyAnswer(question, isAnswerValid);
         }
         return testResult;
@@ -44,7 +44,7 @@ public class TestServiceImpl implements TestService {
         return String.format("%s. %s", sequenceNumber, question.answers().get(sequenceNumber - 1).text());
     }
 
-    private boolean isInputAnswerValid(Question question) {
+    private boolean readAndValidateAnswerFor(Question question) {
         var numberOfAnswer = ioService.readIntForRangeWithPrompt(1,
             question.answers().size(),
                 "Please, enter the number of answer from the offered:",
