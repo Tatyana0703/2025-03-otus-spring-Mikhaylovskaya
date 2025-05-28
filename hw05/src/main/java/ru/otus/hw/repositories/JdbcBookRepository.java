@@ -129,21 +129,11 @@ public class JdbcBookRepository implements BookRepository {
             book.setTitle(resultSet.getString("book_title"));
             long authorId = resultSet.getLong("author_id");
             if (authorId > 0) {
-                book.setAuthor(
-                        new Author(
-                                authorId,
-                                resultSet.getString("author_full_name")
-                        )
-                );
+                book.setAuthor(new Author(authorId, resultSet.getString("author_full_name")));
             }
             long genreId = resultSet.getLong("genre_id");
             if (genreId > 0) {
-                book.setGenre(
-                        new Genre(
-                                genreId,
-                                resultSet.getString("genre_name")
-                        )
-                );
+                book.setGenre(new Genre(genreId, resultSet.getString("genre_name")));
             }
             return book;
         }
