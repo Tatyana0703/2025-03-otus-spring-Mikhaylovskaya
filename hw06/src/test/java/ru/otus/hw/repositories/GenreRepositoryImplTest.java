@@ -12,11 +12,11 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @DisplayName("Репозиторий на основе Jpa для работы с жанрами ")
 @DataJpaTest
-@Import(JpaGenreRepository.class)
-class JpaGenreRepositoryTest {
+@Import(GenreRepositoryImpl.class)
+class GenreRepositoryImplTest {
 
     @Autowired
-    private JpaGenreRepository genreRepository;
+    private GenreRepositoryImpl genreRepository;
 
     private static final int GENRES_COUNT = 3;
     private static final long GENRE_ID = 1L;

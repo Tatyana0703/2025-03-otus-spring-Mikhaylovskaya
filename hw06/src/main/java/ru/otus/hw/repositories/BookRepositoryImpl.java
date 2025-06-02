@@ -4,27 +4,21 @@ import jakarta.persistence.EntityGraph;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.TypedQuery;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
-import ru.otus.hw.exceptions.EntityNotFoundException;
 import ru.otus.hw.models.Book;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import static java.util.Objects.isNull;
+import static java.util.Objects.nonNull;
 import static org.springframework.data.jpa.repository.EntityGraph.EntityGraphType.FETCH;
 
 @Repository
-public class JpaBookRepository implements BookRepository {
+@RequiredArgsConstructor
+public class BookRepositoryImpl implements BookRepository {
 
     @PersistenceContext
     private final EntityManager em;
-
-    private final CommentRepository commentRepository;
-
-    public JpaBookRepository(EntityManager em, CommentRepository commentRepository) {
-        this.em = em;
-        this.commentRepository = commentRepository;
-    }
 
     @Override
     public Optional<Book> findById(long id) {
@@ -48,19 +42,14 @@ public class JpaBookRepository implements BookRepository {
             em.persist(book);
             return book;
         }
-        if (isNull(em.find(Book.class, book.getId()))) {
-            throw new EntityNotFoundException("Book with id = %d not updated".formatted(book.getId()));
-        }
         return em.merge(book);
     }
 
     @Override
     public void deleteById(long id) {
         Book book = em.find(Book.class, id);
-        if (isNull(book)) {
-            throw new EntityNotFoundException("Book with id = %d not deleted".formatted(id));
+        if (nonNull(book)) {
+            em.remove(book);
         }
-        commentRepository.findByBookId(id).forEach(em::remove);
-        em.remove(book);
     }
 }

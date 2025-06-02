@@ -15,11 +15,11 @@ import static org.springframework.util.StringUtils.hasLength;
 
 @DisplayName("Репозиторий на основе Jpa для работы с комментариями ")
 @DataJpaTest
-@Import(JpaCommentRepository.class)
-class JpaCommentRepositoryTest {
+@Import(CommentRepositoryImpl.class)
+class CommentRepositoryImplTest {
 
     @Autowired
-    private JpaCommentRepository commentRepository;
+    private CommentRepositoryImpl commentRepository;
 
     @Autowired
     private TestEntityManager em;

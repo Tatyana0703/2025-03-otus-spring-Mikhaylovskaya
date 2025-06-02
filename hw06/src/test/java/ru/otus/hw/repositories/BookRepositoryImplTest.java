@@ -6,7 +6,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 import org.springframework.context.annotation.Import;
-import ru.otus.hw.exceptions.EntityNotFoundException;
 import ru.otus.hw.models.Author;
 import ru.otus.hw.models.Book;
 import ru.otus.hw.models.Genre;
@@ -14,15 +13,14 @@ import java.util.List;
 import java.util.Optional;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.util.StringUtils.hasLength;
-import static org.assertj.core.api.AssertionsForClassTypes.assertThatCode;
 
 @DisplayName("Репозиторий на основе Jpa для работы с книгами ")
 @DataJpaTest
-@Import({JpaBookRepository.class, JpaCommentRepository.class})
-class JpaBookRepositoryTest {
+@Import({BookRepositoryImpl.class, CommentRepositoryImpl.class})
+class BookRepositoryImplTest {
 
     @Autowired
-    private JpaBookRepository bookRepository;
+    private BookRepositoryImpl bookRepository;
 
     @Autowired
     private TestEntityManager em;
@@ -103,16 +101,6 @@ class JpaBookRepositoryTest {
                 .usingRecursiveComparison().ignoringExpectedNullFields().isEqualTo(returnedBook);
     }
 
-    @DisplayName("должен выбрасывать исключение при изменении отсутствующей книги ")
-    @Test
-    void shouldReturnExceptionByUpdateNotExistedBook() {
-        Book notExistedBook = Book.builder().id(1000L).build();
-        Book book = em.find(Book.class, notExistedBook.getId());
-        assertThat(book).isNull();
-        assertThatCode(() -> bookRepository.save(notExistedBook))
-                .isInstanceOf(EntityNotFoundException.class);
-    }
-
     @DisplayName("должен удалять имеющуюся книгу по id ")
     @Test
     void shouldDeleteBook() {
@@ -124,14 +112,5 @@ class JpaBookRepositoryTest {
         em.flush();
         book = em.find(Book.class, BOOK_ID);
         assertThat(book).isNull();
-    }
-
-    @DisplayName("должен выбрасывать исключение при удалении отсутствующей книги ")
-    @Test
-    void shouldReturnExceptionByDeleteNotExistedBook() {
-        Book book = em.find(Book.class, 1000L);
-        assertThat(book).isNull();
-        assertThatCode(() -> bookRepository.deleteById(1000L))
-                .isInstanceOf(EntityNotFoundException.class);
     }
 }
