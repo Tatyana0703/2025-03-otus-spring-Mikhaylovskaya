@@ -5,8 +5,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
-import org.springframework.context.annotation.Import;
-import ru.otus.hw.exceptions.EntityNotFoundException;
 import ru.otus.hw.models.Author;
 import ru.otus.hw.models.Book;
 import ru.otus.hw.models.Genre;
@@ -14,7 +12,6 @@ import java.util.List;
 import java.util.Optional;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.util.StringUtils.hasLength;
-import static org.assertj.core.api.AssertionsForClassTypes.assertThatCode;
 
 @DisplayName("Репозиторий на основе Jpa для работы с книгами ")
 @DataJpaTest
@@ -36,7 +33,7 @@ class BookRepositoryTest {
     @DisplayName("должен загружать книгу по id")
     @Test
     void shouldReturnCorrectBookById() {
-        Optional<Book> actualBook = bookRepository.findById(BOOK_ID);
+        Optional<Book> actualBook = bookRepository.findBookWithAuthorAndGenre(BOOK_ID);
         Book expectedBook = em.find(Book.class, BOOK_ID);
         assertThat(actualBook).isPresent().get()
                 .usingRecursiveComparison().isEqualTo(expectedBook);
@@ -45,7 +42,7 @@ class BookRepositoryTest {
     @DisplayName("должен загружать список всех книг")
     @Test
     void shouldReturnCorrectBooksList() {
-        List<Book> actualBooks = bookRepository.findAll();
+        List<Book> actualBooks = bookRepository.findAllBooksWithAuthorAndGenre();
         assertThat(actualBooks).isNotEmpty()
                 .hasSize(BOOKS_COUNT)
                 .allMatch(book -> hasLength(book.getTitle()));
@@ -65,7 +62,7 @@ class BookRepositoryTest {
                 .genre(genre)
                 .build();
 
-        var returnedBook = bookRepository.save(expectedBook);
+        Book returnedBook = bookRepository.save(expectedBook);
 
         assertThat(returnedBook).isNotNull()
                 .matches(book -> book.getId() > 0)
@@ -83,7 +80,7 @@ class BookRepositoryTest {
         assertThat(expectedAuthor).isNotNull();
         Genre expectedGenre = em.find(Genre.class, UPDATED_GENRE_ID);
         assertThat(expectedGenre).isNotNull();
-        var expectedBook = Book.builder()
+        Book expectedBook = Book.builder()
                 .id(BOOK_ID)
                 .title("BookTitle_10500")
                 .author(expectedAuthor)
@@ -91,7 +88,7 @@ class BookRepositoryTest {
                 .build();
         assertThat(em.find(Book.class, BOOK_ID)).isNotNull().isNotEqualTo(expectedBook);
 
-        var returnedBook = bookRepository.save(expectedBook);
+        Book returnedBook = bookRepository.save(expectedBook);
 
         assertThat(returnedBook).isNotNull()
                 .matches(book -> book.getId() == BOOK_ID)

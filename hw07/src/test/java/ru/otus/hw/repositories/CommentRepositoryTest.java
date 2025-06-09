@@ -31,7 +31,7 @@ class CommentRepositoryTest {
     @DisplayName("должен загружать комментарий по id")
     @Test
     void shouldReturnCorrectCommentById() {
-        Optional<Comment> actualComment = commentRepository.findById(COMMENT_ID);
+        Optional<Comment> actualComment = commentRepository.findCommentWithBook(COMMENT_ID);
         Comment expectedComment = em.find(Comment.class, COMMENT_ID);
         assertThat(actualComment).isPresent().get()
                 .usingRecursiveComparison().isEqualTo(expectedComment);
@@ -40,7 +40,7 @@ class CommentRepositoryTest {
     @DisplayName("должен загружать список комментариев по конкретной книге")
     @Test
     void shouldReturnCorrectCommentListByBookId() {
-        List<Comment> actualComments = commentRepository.findByBookId(FIRST_BOOK_ID);
+        List<Comment> actualComments = commentRepository.findAllByBookId(FIRST_BOOK_ID);
         assertThat(actualComments).isNotEmpty()
                 .hasSize(COMMENTS_COUNT_FOR_FIRST_BOOK)
                 .allMatch(comment -> hasLength(comment.getText()));
@@ -57,7 +57,7 @@ class CommentRepositoryTest {
                 .book(book)
                 .build();
 
-        var returnedComment = commentRepository.save(expectedComment);
+        Comment returnedComment = commentRepository.save(expectedComment);
 
         assertThat(returnedComment).isNotNull()
                 .matches(comment -> comment.getId() > 0)
@@ -73,14 +73,14 @@ class CommentRepositoryTest {
     void shouldSaveUpdatedBook() {
         Book expectedBook = em.find(Book.class, UPDATED_BOOK_ID);
         assertThat(expectedBook).isNotNull();
-        var expectedComment = Comment.builder()
+        Comment expectedComment = Comment.builder()
                 .id(UPDATED_COMMENT_ID)
                 .text("CommentText_10500")
                 .book(expectedBook)
                 .build();
         assertThat(em.find(Comment.class, UPDATED_COMMENT_ID)).isNotNull().isNotEqualTo(expectedComment);
 
-        var returnedComment = commentRepository.save(expectedComment);
+        Comment returnedComment = commentRepository.save(expectedComment);
 
         assertThat(returnedComment).isNotNull()
                 .matches(comment -> comment.getId() == UPDATED_COMMENT_ID)

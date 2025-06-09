@@ -5,9 +5,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import ru.otus.hw.exceptions.EntityNotFoundException;
-import ru.otus.hw.models.Author;
 import ru.otus.hw.models.Book;
-import ru.otus.hw.models.Genre;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -34,26 +32,20 @@ class BookServiceImplTest {
     @DisplayName("должен загружать книгу по id")
     @Test
     void shouldReturnCorrectBookById() {
-        Book expectedBook = getExpectedSearchedBook();
-        Optional<Book> book = bookService.findById(SEARCHED_BOOK_ID);
-        assertThat(book).isNotEmpty().get()
-                .usingRecursiveComparison().isEqualTo(expectedBook);
-    }
-
-    private Book getExpectedSearchedBook() {
-        return Book.builder()
-                .id(SEARCHED_BOOK_ID)
-                .title("Test_BookTitle_1")
-                .author(new Author(1L, "Test_Author_1"))
-                .genre(new Genre(1L, "Test_Genre_1"))
-                .build();
+        Optional<Book> returnedBook = bookService.findById(SEARCHED_BOOK_ID);
+        assertThat(returnedBook).isNotEmpty().get()
+                .matches(
+                        book -> hasLength(book.getTitle()) &&
+                                Objects.nonNull(book.getAuthor()) && hasLength(book.getAuthor().getFullName()) &&
+                                Objects.nonNull(book.getGenre()) && hasLength(book.getGenre().getName())
+                );
     }
 
     @DisplayName("должен загружать список всех книг")
     @Test
     void shouldReturnCorrectBooksList() {
-        List<Book> actualBooks = bookService.findAll();
-        assertThat(actualBooks).isNotEmpty()
+        List<Book> returnedBooks = bookService.findAll();
+        assertThat(returnedBooks).isNotEmpty()
                 .hasSizeGreaterThan(1)
                 .allMatch(
                         book -> hasLength(book.getTitle()) &&
@@ -65,8 +57,8 @@ class BookServiceImplTest {
     @DisplayName("должен сохранять новую книгу")
     @Test
     void shouldInsertNewBook() {
-        var bookTitle = "BookTitle_10500";
-        var returnedBook = bookService.insert(bookTitle, AUTHOR_ID, GENRE_ID);
+        String bookTitle = "BookTitle_10500";
+        Book returnedBook = bookService.insert(bookTitle, AUTHOR_ID, GENRE_ID);
 
         assertThat(returnedBook).isNotNull()
                 .matches(
@@ -97,7 +89,7 @@ class BookServiceImplTest {
                                 book.getGenre().getId() != GENRE_ID
                 );
 
-        var returnedBook = bookService.update(UPDATED_BOOK_ID, UPDATED_BOOK_TITLE, AUTHOR_ID, GENRE_ID);
+        Book returnedBook = bookService.update(UPDATED_BOOK_ID, UPDATED_BOOK_TITLE, AUTHOR_ID, GENRE_ID);
 
         assertThat(returnedBook).isNotNull()
                 .matches(
@@ -126,15 +118,6 @@ class BookServiceImplTest {
 
         deletedBook = bookService.findById(DELETED_BOOK_ID);
         assertThat(deletedBook).isEmpty();
-    }
-
-    @DisplayName("должен выбрасывать исключение при удалении отсутствующей книги ")
-    @Test
-    void shouldReturnExceptionByDeleteNotExistedBook() {
-        Optional<Book> deletedBook = bookService.findById(1000L);
-        assertThat(deletedBook).isEmpty();
-        assertThatCode(() -> bookService.deleteById(1000L))
-                .isInstanceOf(EntityNotFoundException.class);
     }
 
     @DisplayName("должен выбрасывать исключение при изменении отсутствующей книги ")

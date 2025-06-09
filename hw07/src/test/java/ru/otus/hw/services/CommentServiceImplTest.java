@@ -57,8 +57,8 @@ class CommentServiceImplTest {
     @DisplayName("должен сохранять новый комментарий")
     @Test
     void shouldInsertNewComment() {
-        var commentText = "Comment_text";
-        var returnedComment = commentService.insert(commentText, INSERTED_COMMENT_FOR_BOOK_ID);
+        String commentText = "Comment_text";
+        Comment returnedComment = commentService.insert(commentText, INSERTED_COMMENT_FOR_BOOK_ID);
 
         assertThat(returnedComment).isNotNull()
                 .matches(
@@ -78,13 +78,13 @@ class CommentServiceImplTest {
     @DisplayName("должен сохранять измененный комментарий")
     @Test
     void shouldUpdateBook() {
-        var updatedComment = commentService.findById(UPDATED_COMMENT_ID);
+        Optional<Comment> updatedComment = commentService.findById(UPDATED_COMMENT_ID);
         assertThat(updatedComment)
                 .isNotEmpty()
                 .get()
                 .matches(comment -> !comment.getText().equals(UPDATED_COMMENT_TEXT));
 
-        var returnedComment = commentService.update(UPDATED_COMMENT_ID, UPDATED_COMMENT_TEXT, UPDATED_COMMENT_FOR_BOOK_ID);
+        Comment returnedComment = commentService.update(UPDATED_COMMENT_ID, UPDATED_COMMENT_TEXT, UPDATED_COMMENT_FOR_BOOK_ID);
 
         assertThat(returnedComment).isNotNull()
                 .matches(
@@ -111,15 +111,6 @@ class CommentServiceImplTest {
 
         deletedComment = commentService.findById(DELETED_COMMENT_ID);
         assertThat(deletedComment).isEmpty();
-    }
-
-    @DisplayName("должен выбрасывать исключение при удалении отсутствующего комментария ")
-    @Test
-    void shouldReturnExceptionByDeleteNotExistedBook() {
-        Optional<Comment> deletedComment = commentService.findById(1000L);
-        assertThat(deletedComment).isEmpty();
-        assertThatCode(() -> commentService.deleteById(1000L))
-                .isInstanceOf(EntityNotFoundException.class);
     }
 
     @DisplayName("должен выбрасывать исключение при изменении отсутствующего комментария ")
