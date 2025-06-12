@@ -23,9 +23,9 @@ public class TestRunnerServiceImpl implements TestRunnerService {
             var testResult = testService.executeTestFor(student);
             resultService.showResult(testResult);
         } catch (QuestionReadException e) {
-            ioService.readStringWithPromptLocalized("TestRunnerService.question.read.exception");
+            ioService.printLineLocalized("TestRunnerService.question.read.exception");
         } catch (Exception e) {
-            ioService.readStringWithPromptLocalized("TestRunnerService.general.exception");
+            ioService.printLineLocalized("TestRunnerService.general.exception");
         }
     }
 }
