@@ -25,22 +25,20 @@ public class BookServiceImpl implements BookService {
     @Override
     @Transactional(readOnly = true)
     public Optional<Book> findById(long id) {
-        return bookRepository.findBookWithAuthorAndGenre(id);
+        return bookRepository.findById(id);
     }
 
     @Override
     @Transactional(readOnly = true)
     public List<Book> findAll() {
-        return bookRepository.findAllBooksWithAuthorAndGenre();
+        return bookRepository.findAll();
     }
 
     @Override
     @Transactional
     public Book insert(String title, long authorId, long genreId) {
-        Author author = authorRepository.findById(authorId)
-                .orElseThrow(() -> new EntityNotFoundException("Author with id %d not found".formatted(authorId)));
-        Genre genre = genreRepository.findById(genreId)
-                .orElseThrow(() -> new EntityNotFoundException("Genre with id %d not found".formatted(genreId)));
+        Author author = getAuthor(authorId);
+        Genre genre = getGenre(genreId);
         Book book = new Book(0, title, author, genre);
         return bookRepository.save(book);
     }
@@ -50,10 +48,8 @@ public class BookServiceImpl implements BookService {
     public Book update(long id, String title, long authorId, long genreId) {
         Book updatedBook = bookRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Book with id %d not found".formatted(id)));
-        Author author = authorRepository.findById(authorId)
-                .orElseThrow(() -> new EntityNotFoundException("Author with id %d not found".formatted(authorId)));
-        Genre genre = genreRepository.findById(genreId)
-                .orElseThrow(() -> new EntityNotFoundException("Genre with id %d not found".formatted(genreId)));
+        Author author = getAuthor(authorId);
+        Genre genre = getGenre(genreId);
         updatedBook.setTitle(title);
         updatedBook.setAuthor(author);
         updatedBook.setGenre(genre);
@@ -64,5 +60,15 @@ public class BookServiceImpl implements BookService {
     @Transactional
     public void deleteById(long id) {
         bookRepository.deleteById(id);
+    }
+
+    private Author getAuthor(long authorId) {
+        return authorRepository.findById(authorId)
+                .orElseThrow(() -> new EntityNotFoundException("Author with id %d not found".formatted(authorId)));
+    }
+
+    private Genre getGenre(long genreId) {
+        return genreRepository.findById(genreId)
+                .orElseThrow(() -> new EntityNotFoundException("Genre with id %d not found".formatted(genreId)));
     }
 }

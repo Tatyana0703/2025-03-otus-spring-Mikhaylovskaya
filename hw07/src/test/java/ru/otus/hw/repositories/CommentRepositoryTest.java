@@ -31,7 +31,7 @@ class CommentRepositoryTest {
     @DisplayName("должен загружать комментарий по id")
     @Test
     void shouldReturnCorrectCommentById() {
-        Optional<Comment> actualComment = commentRepository.findCommentWithBook(COMMENT_ID);
+        Optional<Comment> actualComment = commentRepository.findById(COMMENT_ID);
         Comment expectedComment = em.find(Comment.class, COMMENT_ID);
         assertThat(actualComment).isPresent().get()
                 .usingRecursiveComparison().isEqualTo(expectedComment);

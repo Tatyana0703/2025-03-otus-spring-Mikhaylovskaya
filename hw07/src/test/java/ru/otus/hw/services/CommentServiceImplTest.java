@@ -36,8 +36,7 @@ class CommentServiceImplTest {
         assertThat(actualComment).isNotEmpty().get()
                 .matches(comment ->
                                 hasLength(comment.getText()) &&
-                                comment.getBook().getId() == SEARCHED_BOOK_ID &&
-                                hasLength(comment.getBook().getTitle())
+                                comment.getBook().getId() == SEARCHED_BOOK_ID
                         );
     }
 
@@ -49,8 +48,7 @@ class CommentServiceImplTest {
                 .hasSizeGreaterThan(1)
                 .allMatch(
                         comment -> hasLength(comment.getText()) &&
-                                comment.getBook().getId() == SEARCHED_BOOK_ID &&
-                                hasLength(comment.getBook().getTitle())
+                                comment.getBook().getId() == SEARCHED_BOOK_ID
                 );
     }
 

@@ -33,7 +33,7 @@ class BookRepositoryTest {
     @DisplayName("должен загружать книгу по id")
     @Test
     void shouldReturnCorrectBookById() {
-        Optional<Book> actualBook = bookRepository.findBookWithAuthorAndGenre(BOOK_ID);
+        Optional<Book> actualBook = bookRepository.findById(BOOK_ID);
         Book expectedBook = em.find(Book.class, BOOK_ID);
         assertThat(actualBook).isPresent().get()
                 .usingRecursiveComparison().isEqualTo(expectedBook);
@@ -42,7 +42,7 @@ class BookRepositoryTest {
     @DisplayName("должен загружать список всех книг")
     @Test
     void shouldReturnCorrectBooksList() {
-        List<Book> actualBooks = bookRepository.findAllBooksWithAuthorAndGenre();
+        List<Book> actualBooks = bookRepository.findAll();
         assertThat(actualBooks).isNotEmpty()
                 .hasSize(BOOKS_COUNT)
                 .allMatch(book -> hasLength(book.getTitle()));

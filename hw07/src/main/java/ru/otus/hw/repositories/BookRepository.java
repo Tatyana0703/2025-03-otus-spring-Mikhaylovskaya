@@ -1,16 +1,19 @@
 package ru.otus.hw.repositories;
 
+import jakarta.annotation.Nonnull;
+import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Query;
 import ru.otus.hw.models.Book;
 import java.util.List;
 import java.util.Optional;
 
 public interface BookRepository extends JpaRepository<Book, Long> {
 
-    @Query("select b from Book b left join fetch b.author left join fetch b.genre where b.id = :id")
-    Optional<Book> findBookWithAuthorAndGenre(long id);
+    @EntityGraph(attributePaths = {"author", "genre"})
+    @Nonnull
+    Optional<Book> findById(long id);
 
-    @Query("select b from Book b left join fetch b.author left join fetch b.genre")
-    List<Book> findAllBooksWithAuthorAndGenre();
+    @EntityGraph(attributePaths = {"author", "genre"})
+    @Nonnull
+    List<Book> findAll();
 }

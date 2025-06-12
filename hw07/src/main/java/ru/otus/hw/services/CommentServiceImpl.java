@@ -11,8 +11,6 @@ import java.util.Optional;
 import ru.otus.hw.repositories.BookRepository;
 import ru.otus.hw.repositories.CommentRepository;
 
-import static java.util.Collections.emptyList;
-
 @RequiredArgsConstructor
 @Service
 public class CommentServiceImpl implements CommentService {
@@ -23,21 +21,19 @@ public class CommentServiceImpl implements CommentService {
     @Override
     @Transactional(readOnly = true)
     public Optional<Comment> findById(long id) {
-        return commentRepository.findCommentWithBook(id);
+        return commentRepository.findById(id);
     }
 
     @Override
     @Transactional(readOnly = true)
     public List<Comment> findByBookId(long bookId) {
-        Optional<Book> book = bookRepository.findById(bookId);
-        return book.map(value -> commentRepository.findAllByBookId(value.getId())).orElse(emptyList());
+        return commentRepository.findAllByBookId(bookId);
     }
 
     @Override
     @Transactional
     public Comment insert(String text, long bookId) {
-        Book book = bookRepository.findById(bookId)
-                .orElseThrow(() -> new EntityNotFoundException("Book with id %d not found".formatted(bookId)));
+        Book book = getBook(bookId);
         Comment comment = new Comment(0, text, book);
         return commentRepository.save(comment);
     }
@@ -47,8 +43,7 @@ public class CommentServiceImpl implements CommentService {
     public Comment update(long id, String text, long bookId) {
         Comment updatedComment = commentRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Comment with id %d not found".formatted(id)));
-        Book book = bookRepository.findById(bookId)
-                .orElseThrow(() -> new EntityNotFoundException("Book with id %d not found".formatted(bookId)));
+        Book book = getBook(bookId);
         updatedComment.setText(text);
         updatedComment.setBook(book);
         return commentRepository.save(updatedComment);
@@ -58,5 +53,10 @@ public class CommentServiceImpl implements CommentService {
     @Transactional
     public void deleteById(long id) {
         commentRepository.deleteById(id);
+    }
+
+    private Book getBook(long bookId) {
+        return bookRepository.findById(bookId)
+                .orElseThrow(() -> new EntityNotFoundException("Book with id %d not found".formatted(bookId)));
     }
 }
