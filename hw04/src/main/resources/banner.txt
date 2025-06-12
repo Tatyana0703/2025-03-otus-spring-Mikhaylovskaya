@@ -1,0 +1,10 @@
+${AnsiColor.RED} ____o__ __o____ ${AnsiColor.BLUE}  o__ __o__/_${AnsiColor.YELLOW}   o__ __o    ${AnsiColor.GREEN}____o__ __o____ ${AnsiColor.MAGENTA}   o__ __o
+${AnsiColor.RED}  /   \   /   \  ${AnsiColor.BLUE} <|    v     ${AnsiColor.YELLOW}  /v     v\   ${AnsiColor.GREEN} /   \   /   \  ${AnsiColor.MAGENTA}  /v     v\
+${AnsiColor.RED}       \o/       ${AnsiColor.BLUE} < >         ${AnsiColor.YELLOW} />       <\  ${AnsiColor.GREEN}      \o/       ${AnsiColor.MAGENTA} />       <\
+${AnsiColor.RED}        |        ${AnsiColor.BLUE}  |          ${AnsiColor.YELLOW}_\o____       ${AnsiColor.GREEN}       |        ${AnsiColor.MAGENTA}_\o____
+${AnsiColor.RED}       < >       ${AnsiColor.BLUE}  o__/_      ${AnsiColor.YELLOW}     \_\__o__ ${AnsiColor.GREEN}      < >       ${AnsiColor.MAGENTA}     \_\__o__
+${AnsiColor.RED}        |        ${AnsiColor.BLUE}  |          ${AnsiColor.YELLOW}           \  ${AnsiColor.GREEN}       |        ${AnsiColor.MAGENTA}           \
+${AnsiColor.RED}        o        ${AnsiColor.BLUE} <o>         ${AnsiColor.YELLOW} \         /  ${AnsiColor.GREEN}       o        ${AnsiColor.MAGENTA} \         /
+${AnsiColor.RED}       <|        ${AnsiColor.BLUE}  |          ${AnsiColor.YELLOW}  o       o   ${AnsiColor.GREEN}      <|        ${AnsiColor.MAGENTA}  o       o
+${AnsiColor.RED}       / \       ${AnsiColor.BLUE} / \  _\o__/_${AnsiColor.YELLOW}  <\__ __/>   ${AnsiColor.GREEN}      / \       ${AnsiColor.MAGENTA}  <\__ __/>
+${AnsiColor.DEFAULT}
