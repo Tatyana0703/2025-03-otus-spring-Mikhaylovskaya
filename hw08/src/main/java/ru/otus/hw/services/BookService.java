@@ -1,0 +1,24 @@
+package ru.otus.hw.services;
+
+import ru.otus.hw.dto.Author;
+import ru.otus.hw.dto.Genre;
+import ru.otus.hw.models.Book;
+import java.util.List;
+import java.util.Optional;
+
+public interface BookService {
+
+    Optional<Book> findById(String id);
+
+    List<Book> findAll();
+
+    Book insert(String title, String author, String genre);
+
+    Book update(String id, String title, String author, String genre);
+
+    void deleteById(String id);
+
+    List<Author> findAuthors();
+
+    List<Genre> findGenres();
+}
