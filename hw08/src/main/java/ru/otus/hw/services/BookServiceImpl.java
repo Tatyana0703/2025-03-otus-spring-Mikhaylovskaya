@@ -3,11 +3,15 @@ package ru.otus.hw.services;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import ru.otus.hw.dto.Author;
-import ru.otus.hw.dto.Genre;
 import ru.otus.hw.exceptions.EntityNotFoundException;
+import ru.otus.hw.models.Author;
 import ru.otus.hw.models.Book;
+import ru.otus.hw.models.Genre;
+import ru.otus.hw.repositories.AuthorRepository;
 import ru.otus.hw.repositories.BookRepository;
+import ru.otus.hw.repositories.CommentRepository;
+import ru.otus.hw.repositories.GenreRepository;
+
 import java.util.List;
 import java.util.Optional;
 
@@ -16,6 +20,12 @@ import java.util.Optional;
 public class BookServiceImpl implements BookService {
 
     private final BookRepository bookRepository;
+
+    private final AuthorRepository authorRepository;
+
+    private final GenreRepository genreRepository;
+
+    private final CommentRepository commentRepository;
 
     @Override
     @Transactional(readOnly = true)
@@ -31,16 +41,24 @@ public class BookServiceImpl implements BookService {
 
     @Override
     @Transactional
-    public Book insert(String title, String author, String genre) {
+    public Book insert(String title, String authorFullName, String genreName) {
+        Author author = authorRepository.findByFullName(authorFullName)
+                .orElseThrow(() -> new EntityNotFoundException("Author '%s' not found".formatted(authorFullName)));
+        Genre genre = genreRepository.findByName(genreName)
+                .orElseThrow(() -> new EntityNotFoundException("Genre '%s' not found".formatted(genreName)));
         Book book = new Book(title, author, genre);
         return bookRepository.save(book);
     }
 
     @Override
     @Transactional
-    public Book update(String id, String title, String author, String genre) {
+    public Book update(String id, String title, String authorFullName, String genreName) {
         Book updatedBook = bookRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Book with id %s not found".formatted(id)));
+        Author author = authorRepository.findByFullName(authorFullName)
+                .orElseThrow(() -> new EntityNotFoundException("Author '%s' not found".formatted(authorFullName)));
+        Genre genre = genreRepository.findByName(genreName)
+                .orElseThrow(() -> new EntityNotFoundException("Genre '%s' not found".formatted(genreName)));
         updatedBook.setTitle(title);
         updatedBook.setAuthor(author);
         updatedBook.setGenre(genre);
@@ -50,18 +68,7 @@ public class BookServiceImpl implements BookService {
     @Override
     @Transactional
     public void deleteById(String id) {
-        bookRepository.deleteWithComments(id);
-    }
-
-    @Override
-    @Transactional(readOnly = true)
-    public List<Author> findAuthors() {
-        return bookRepository.findAuthors();
-    }
-
-    @Override
-    @Transactional(readOnly = true)
-    public List<Genre> findGenres() {
-        return bookRepository.findGenres();
+        commentRepository.deleteAllByBookId(id);
+        bookRepository.deleteById(id);
     }
 }

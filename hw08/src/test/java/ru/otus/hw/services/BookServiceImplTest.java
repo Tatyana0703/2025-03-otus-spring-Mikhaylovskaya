@@ -4,8 +4,6 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import ru.otus.hw.dto.Author;
-import ru.otus.hw.dto.Genre;
 import ru.otus.hw.models.Book;
 import java.util.List;
 import java.util.Optional;
@@ -25,11 +23,9 @@ class BookServiceImplTest {
         List<Book> returnedBooks = bookService.findAll();
         assertThat(returnedBooks).isNotEmpty()
                 .hasSizeGreaterThan(1)
-                .allMatch(
-                        book -> hasLength(book.getTitle()) &&
-                                hasLength(book.getAuthor()) &&
-                                hasLength(book.getGenre())
-                );
+                .allMatch(book -> hasLength(book.getTitle()) &&
+                        hasLength(book.getAuthor().getFullName()) &&
+                        hasLength(book.getGenre().getName()));
     }
 
     @DisplayName("должен загружать книгу по id")
@@ -41,49 +37,29 @@ class BookServiceImplTest {
                 .usingRecursiveComparison().isEqualTo(expectedBook);
     }
 
-    @DisplayName("должен возвращать список всех авторов")
-    @Test
-    void shouldReturnCorrectAuthors() {
-        List<Author> returnedBooks = bookService.findAuthors();
-        assertThat(returnedBooks).isNotEmpty()
-                .hasSizeGreaterThan(1)
-                .doesNotHaveDuplicates()
-                .allMatch(author -> hasLength(author.getFullName()) && author.getFullName().matches(".*[aA]uthor.*"));
-    }
-
-    @DisplayName("должен возвращать список всех жанров")
-    @Test
-    void shouldReturnCorrectGenres() {
-        List<Genre> returnedBooks = bookService.findGenres();
-        assertThat(returnedBooks).isNotEmpty()
-                .hasSizeGreaterThan(1)
-                .doesNotHaveDuplicates()
-                .allMatch(genre -> hasLength(genre.getName()) && genre.getName().matches(".*[gG]enre.*"));
-    }
-
     @DisplayName("должен сохранять новую книгу")
     @Test
     void shouldInsertNewBook() {
-        String bookTitle = "TestTitle";
-        String bookAuthor = "TestAuthor";
-        String bookGenre = "TestGenre";
+        String bookTitle = "Test Title";
+        String bookAuthor = "Test Author 1";
+        String bookGenre = "Test Genre 1";
 
         Book returnedBook = bookService.insert(bookTitle, bookAuthor, bookGenre);
 
         assertThat(returnedBook).isNotNull()
                 .matches(
                         book -> hasLength(book.getId()) &&
-                        book.getTitle().equals(bookTitle) &&
-                        book.getAuthor().equals(bookAuthor) &&
-                        book.getGenre().equals(bookGenre)
+                                book.getTitle().equals(bookTitle) &&
+                                book.getAuthor().getFullName().equals(bookAuthor) &&
+                                book.getGenre().getName().equals(bookGenre)
                 );
         assertThat(bookService.findById(returnedBook.getId()))
                 .isNotEmpty()
                 .get()
                 .matches(
                         book -> book.getTitle().equals(bookTitle) &&
-                                book.getAuthor().equals(bookAuthor) &&
-                                book.getGenre().equals(bookGenre)
+                                book.getAuthor().getFullName().equals(bookAuthor) &&
+                                book.getGenre().getName().equals(bookGenre)
                 );
     }
 
@@ -91,17 +67,17 @@ class BookServiceImplTest {
     @Test
     void shouldUpdateBook() {
         String updatedBookId = bookService.findAll().get(0).getId();
-        String updatedBookTitle = "NewTitle";
-        String updatedBookAuthor = "NewAuthor";
-        String updatedBookGenre = "NewGenre";
+        String updatedBookTitle = "New Test Title";
+        String updatedBookAuthor = "Test Author 2";
+        String updatedBookGenre = "Test Genre 2";
 
         assertThat(bookService.findById(updatedBookId))
                 .isNotEmpty()
                 .get()
                 .matches(
                         book -> !book.getTitle().equals(updatedBookTitle) &&
-                                !book.getAuthor().equals(updatedBookAuthor) &&
-                                !book.getGenre().equals(updatedBookGenre)
+                                !book.getAuthor().getFullName().equals(updatedBookAuthor) &&
+                                !book.getGenre().getName().equals(updatedBookGenre)
                 );
 
         Book returnedBook = bookService.update(updatedBookId, updatedBookTitle, updatedBookAuthor, updatedBookGenre);
@@ -110,16 +86,16 @@ class BookServiceImplTest {
                 .matches(
                         book -> book.getId().equals(updatedBookId) &&
                                 book.getTitle().equals(updatedBookTitle) &&
-                                book.getAuthor().equals(updatedBookAuthor) &&
-                                book.getGenre().equals(updatedBookGenre)
+                                book.getAuthor().getFullName().equals(updatedBookAuthor) &&
+                                book.getGenre().getName().equals(updatedBookGenre)
                 );
         assertThat(bookService.findById(returnedBook.getId()))
                 .isNotEmpty()
                 .get()
                 .matches(
                         book -> book.getTitle().equals(updatedBookTitle) &&
-                                book.getAuthor().equals(updatedBookAuthor) &&
-                                book.getGenre().equals(updatedBookGenre)
+                                book.getAuthor().getFullName().equals(updatedBookAuthor) &&
+                                book.getGenre().getName().equals(updatedBookGenre)
                 );
     }
 

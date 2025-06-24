@@ -2,6 +2,7 @@ package ru.otus.hw.models;
 
 import lombok.Data;
 import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 @Data
@@ -13,11 +14,13 @@ public class Book {
 
     private String title;
 
-    private String author;
+    @DBRef
+    private Author author;
 
-    private String genre;
+    @DBRef
+    private Genre genre;
 
-    public Book(String title, String author, String genre) {
+    public Book(String title, Author author, Genre genre) {
         this.title = title;
         this.author = author;
         this.genre = genre;

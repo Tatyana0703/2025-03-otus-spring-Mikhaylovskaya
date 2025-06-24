@@ -4,6 +4,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import ru.otus.hw.models.Book;
 import ru.otus.hw.models.Comment;
 import java.util.List;
 import java.util.Optional;
@@ -28,49 +29,45 @@ class CommentServiceImplTest {
         assertThat(returnedComments).isNotEmpty()
                 .hasSizeGreaterThan(1)
                 .allMatch(comment -> hasLength(comment.getText()) &&
-                                comment.getBook().getId().equals(bookId));
+                        comment.getBook().getId().equals(bookId));
     }
 
     @DisplayName("должен сохранять новый комментарий")
     @Test
     void shouldInsertNewComment() {
-        String bookId = bookService.findAll().get(0).getId();
+        Book book = bookService.findAll().get(0);
         String commentText = "CommentTest";
-        Comment returnedComment = commentService.insert(commentText, bookId);
+        Comment returnedComment = commentService.insert(commentText, book.getId());
 
         assertThat(returnedComment).isNotNull()
                 .matches(comment -> hasLength(comment.getId()) &&
-                                comment.getText().equals(commentText) &&
-                                comment.getBook().getId().equals(bookId)
-                );
+                        comment.getText().equals(commentText) &&
+                        comment.getBook().getId().equals(book.getId()));
         assertThat(commentService.findById(returnedComment.getId()))
                 .isNotEmpty()
                 .get()
                 .matches(comment -> comment.getText().equals(commentText) &&
-                                comment.getBook().getId().equals(bookId)
-                );
+                        comment.getBook().getId().equals(book.getId()));
     }
 
     @DisplayName("должен сохранять измененный комментарий")
     @Test
     void shouldUpdateComment() {
-        String bookId = bookService.findAll().get(0).getId();
-        Comment updatedComment = commentService.insert("CommentTest", bookId);
+        Book book = bookService.findAll().get(0);
+        Comment updatedComment = commentService.insert("CommentTest", book.getId());
         String newCommentText = "NewCommentTest";
 
-        Comment returnedComment = commentService.update(updatedComment.getId(), newCommentText, bookId);
+        Comment returnedComment = commentService.update(updatedComment.getId(), newCommentText, book.getId());
 
         assertThat(returnedComment).isNotNull()
                 .matches(comment -> comment.getId().equals(updatedComment.getId()) &&
-                                comment.getText().equals(newCommentText) &&
-                                comment.getBook().getId().equals(bookId)
-                );
+                        comment.getText().equals(newCommentText) &&
+                        comment.getBook().getId().equals(book.getId()));
         assertThat(commentService.findById(returnedComment.getId()))
                 .isNotEmpty()
                 .get()
                 .matches(comment -> comment.getText().equals(newCommentText) &&
-                                comment.getBook().getId().equals(bookId)
-                );
+                        comment.getBook().getId().equals(book.getId()));
     }
 
     @DisplayName("должен удалять имеющийся комментарий по id ")

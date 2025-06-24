@@ -3,10 +3,14 @@ package ru.otus.hw.mongock.changelog;
 import com.github.cloudyrock.mongock.ChangeLog;
 import com.github.cloudyrock.mongock.ChangeSet;
 import com.mongodb.client.MongoDatabase;
+import ru.otus.hw.models.Author;
 import ru.otus.hw.models.Book;
 import ru.otus.hw.models.Comment;
+import ru.otus.hw.models.Genre;
+import ru.otus.hw.repositories.AuthorRepository;
 import ru.otus.hw.repositories.BookRepository;
 import ru.otus.hw.repositories.CommentRepository;
+import ru.otus.hw.repositories.GenreRepository;
 
 @ChangeLog
 public class DatabaseChangelog {
@@ -17,8 +21,11 @@ public class DatabaseChangelog {
     }
 
     @ChangeSet(order = "002", id = "insertData", author = "tmikhaylovskaya")
-    public void insertData(BookRepository bookRepository, CommentRepository commentRepository) {
-        Book book = bookRepository.save(new Book("title_1", "author_1", "genre_1"));
-        commentRepository.save(new Comment("comment_1", book));
+    public void insertData(BookRepository bookRepository, CommentRepository commentRepository,
+                           AuthorRepository authorRepository, GenreRepository genreRepository) {
+        Author author = authorRepository.save(new Author("Author 1"));
+        Genre genre = genreRepository.save(new Genre("Genre 1"));
+        Book book = bookRepository.save(new Book("Title 1", author, genre));
+        commentRepository.save(new Comment("Comment 1", book));
     }
 }
