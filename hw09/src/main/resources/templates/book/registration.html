@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>New Book</title>
+</head>
+<body>
+<h3>Book:</h3>
+<form th:action="@{/books}" method="post" th:object="${book}">
+    <label for="title">Title:
+        <input id="title" type="text" name="title" th:value="*{title}">
+    </label><br>
+    <div>
+        <label for="author">Author:
+            <select id="author" name="authorId">
+                <option th:each="author : ${authors}"
+                        th:value="${author.id}"
+                        th:selected="${author.id == book.authorId}"
+                        th:text="${author.fullName}">Author</option>
+            </select>
+        </label>
+    </div>
+    <div>
+        <label for="genre">Genre:
+            <select id="genre" name="genreId">
+                <option th:each="genre : ${genres}"
+                        th:value="${genre.id}"
+                        th:selected="${genre.id == book.genreId}"
+                        th:text="${genre.name}">Genre</option>
+            </select>
+        </label>
+    </div>
+    <button type="submit">Save</button>
+</form>
+<a href="list.html" th:href="@{/books}"><button type="button">To Book List</button></a>
+<div th:if="${errors}">
+    <p style="color: red" th:each="error : ${errors}" th:text="|${error.field} ${error.defaultMessage}|">Error message</p>
+</div>
+</body>
+</html>

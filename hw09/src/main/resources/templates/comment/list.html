@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <title>List of all comments</title>
+</head>
+<body>
+
+<h3>Comments:</h3>
+
+<table class="comments">
+    <thead>
+    <tr>
+        <th>ID</th>
+        <th>Text</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="comment : ${comments}">
+        <td th:text="${comment.id}">1</td>
+        <td th:text="${comment.text}">Comment text</td>
+    </tr>
+    </tbody>
+</table>
+<a href="../book/list.html" th:href="@{/books}"><button type="button">To Book List</button></a>
+</body>
+</html>

@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <title>List of all books</title>
+</head>
+<body>
+
+<h3>Books:</h3>
+
+<table class="books">
+    <thead>
+    <tr>
+        <th>ID</th>
+        <th>Title</th>
+        <th>Author</th>
+        <th>Genre</th>
+        <th>Action</th>
+        <th>Comments</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="book : ${books}">
+        <td th:text="${book.id}">1</td>
+        <td th:text="${book.title}">Book title</td>
+        <td th:text="${book.author.fullName}">Author full name</td>
+        <td th:text="${book.genre.name}">Genre name</td>
+        <td>
+            <a th:href="@{'/books/' + ${book.id}}" href="edit.html">Edit</a>
+        </td>
+        <td>
+            <a th:href="@{'/comments/book/' + ${book.id}}" href="../comment/list.html">Comments</a>
+        </td>
+    </tr>
+    </tbody>
+</table>
+<a href="registration.html" th:href="@{/books/registration}"><button type="button">New Book</button></a>
+<a href="../author/list.html" th:href="@{/authors}"><button type="button">List of Authors</button></a>
+<a href="../genre/list.html" th:href="@{/genres}"><button type="button">List of Genres</button></a>
+</body>
+</html>
