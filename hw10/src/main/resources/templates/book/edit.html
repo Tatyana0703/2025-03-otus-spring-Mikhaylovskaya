@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <title>Edit book</title>
+    <style type="text/css">
+        body {
+            padding: 50px;
+        }
+
+        label {
+            display: inline-block;
+            width: 100px;
+        }
+
+        input:read-only {
+            background: lightgray;
+        }
+
+        .row {
+            margin-top: 10px;
+        }
+    </style>
+
+    <script>
+        function updateBook() {
+            const savedBookContainer = document.getElementById("saved-book")
+            const idInput = document.getElementById("id-input")
+            const bookId = idInput.value
+            const titleInput = document.getElementById("title-input")
+            const authorSelect = document.getElementById("author-select")
+            const authorValue = authorSelect.options[authorSelect.selectedIndex].value
+            const genreSelect = document.getElementById("genre-select")
+            const genreValue = genreSelect.options[genreSelect.selectedIndex].value
+            const person = { title: titleInput.value, authorId: authorValue, genreId: genreValue}
+            fetch("/api/books/" + bookId, {
+                method: 'PUT',
+                headers: {
+                  'Accept': 'application/json',
+                  'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(person)})
+            .then(rawResponse => rawResponse.json())
+            .then(json => savedBookContainer.innerHTML = JSON.stringify(json, null, 4))
+        }
+    </script>
+
+    <script>
+        function deleteBook() {
+            const idInput = document.getElementById("id-input")
+            const bookId = idInput.value
+            fetch("/api/books/" + bookId, {
+                method: 'DELETE',
+                headers: {
+                  'Accept': 'application/json',
+                  'Content-Type': 'application/json'
+                }})
+        }
+    </script>
+
+    <script>
+        window.onload = function() {
+            const queryString = window.location.search;
+            const urlParams = new URLSearchParams(queryString);
+            const bookId = urlParams.get('id');
+            const idInput = document.getElementById('id-input');
+            idInput.value = bookId;
+
+            fetch('/api/authors')
+            .then(response => {
+              return response.json();
+            })
+            .then(data => {
+              const selectElement = document.getElementById('author-select');
+              data.forEach(item => {
+                const option = document.createElement('option');
+                option.value = item.id;
+                option.textContent = item.fullName;
+                selectElement.appendChild(option);
+              });
+            });
+
+            fetch('/api/genres')
+            .then(response => {
+              return response.json();
+            })
+            .then(data => {
+              const selectElement = document.getElementById('genre-select');
+              data.forEach(item => {
+                const option = document.createElement('option');
+                option.value = item.id;
+                option.textContent = item.name;
+                selectElement.appendChild(option);
+              });
+            });
+
+            fetch('/api/books/' + bookId)
+            .then(response => {
+              return response.json();
+            })
+            .then(data => {
+              const titleInput = document.getElementById('title-input');
+              titleInput.value = data.title;
+              const authorSelect = document.getElementById('author-select');
+              authorSelect.value = data.author.id;
+              const genreSelect = document.getElementById('genre-select');
+              genreSelect.value = data.genre.id;
+            });
+        };
+    </script>
+</head>
+<body>
+
+<h3>Form for book editing:</h3>
+<form action="edit.html" method="post">
+    <div class="row">
+        <label for="id-input">Title:</label>
+        <input id="id-input" readonly="readonly" name="id" type="text"/>
+    </div>
+    <div class="row">
+        <label for="title-input">Title:</label>
+        <input id="title-input" name="title" type="text"/>
+    </div>
+    <div class="row">
+        <label for="author-select">Author:</label>
+        <select id="author-select" name="authorId">
+        </select>
+    </div>
+    <div class="row">
+        <label for="genre-select">Genre:</label>
+        <select id="genre-select" name="genreId">
+        </select>
+    </div>
+    <div class="row">
+        <button type="button" onclick="updateBook()" >Update</button>
+        <button type="button" onclick="deleteBook()" >Delete</button>
+        <a href="list.html" th:href="@{/books}"><button type="button">Go Back</button></a>
+    </div>
+</form>
+
+<h3>Saved book:</h3>
+<pre id = "saved-book"></pre>
+
+</body>
+</html>

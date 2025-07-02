@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <title>New book</title>
+    <style type="text/css">
+        body {
+            padding: 50px;
+        }
+
+        label {
+            display: inline-block;
+            width: 100px;
+        }
+
+        input:read-only {
+            background: lightgray;
+        }
+
+        .row {
+            margin-top: 10px;
+        }
+    </style>
+
+    <script>
+        function saveBook() {
+            const savedBookContainer = document.getElementById("saved-book")
+            const titleInput = document.getElementById("title-input")
+            const authorSelect = document.getElementById("author-select")
+            const authorValue = authorSelect.options[authorSelect.selectedIndex].value
+            const genreSelect = document.getElementById("genre-select")
+            const genreValue = genreSelect.options[genreSelect.selectedIndex].value
+            const person = { title: titleInput.value, authorId: authorValue, genreId: genreValue}
+            fetch("/api/books", {
+                method: 'POST',
+                headers: {
+                  'Accept': 'application/json',
+                  'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(person)})
+            .then(rawResponse => rawResponse.json())
+            .then(json => savedBookContainer.innerHTML = JSON.stringify(json, null, 4))
+        }
+
+        window.onload = function() {
+          fetch('/api/authors')
+            .then(response => {
+              return response.json();
+            })
+            .then(data => {
+              const selectElement = document.getElementById('author-select');
+              data.forEach(item => {
+                const option = document.createElement('option');
+                option.value = item.id;
+                option.textContent = item.fullName;
+                selectElement.appendChild(option);
+              });
+            });
+
+          fetch('/api/genres')
+            .then(response => {
+              return response.json();
+            })
+            .then(data => {
+              const selectElement = document.getElementById('genre-select');
+              data.forEach(item => {
+                const option = document.createElement('option');
+                option.value = item.id;
+                option.textContent = item.name;
+                selectElement.appendChild(option);
+              });
+            });
+        };
+    </script>
+</head>
+<body>
+
+<h3>Form for new book creation:</h3>
+<form id="edit-form" action="registration.html" method="post">
+    <div class="row">
+        <label for="title-input">Title:</label>
+        <input id="title-input" name="title" type="text"/>
+    </div>
+
+    <div class="row">
+        <label for="author-select">Author:</label>
+        <select id="author-select" name="authorId">
+        </select>
+    </div>
+
+    <div class="row">
+        <label for="genre-select">Genre:</label>
+        <select id="genre-select" name="genreId">
+        </select>
+    </div>
+
+    <div class="row">
+        <button type="button" onclick="saveBook()" >Save</button>
+        <a href="list.html" th:href="@{/books}"><button type="button">Go Back</button></a>
+    </div>
+</form>
+
+<h3>Saved book:</h3>
+<pre id = "saved-book"></pre>
+
+</body>
+</html>

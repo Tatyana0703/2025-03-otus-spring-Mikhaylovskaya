@@ -1,0 +1,21 @@
+curl -v -X GET http://localhost:8080/api/books
+
+curl -v -X GET http://localhost:8080/api/books/1
+
+curl -v -X POST http://localhost:8080/api/books \
+   -H "Content-Type: application/json" \
+   -d '{ "title": "qwerty", "authorId": 1, "genreId": 1 }'
+
+curl -v -X POST http://localhost:8080/api/books \
+   -H "Content-Type: application/json" \
+   -d '{ "title": "qwerty", "authorId": 100, "genreId": 100 }'
+
+curl -v -X PUT http://localhost:8080/api/books/1 \
+   -H "Content-Type: application/json" \
+   -d '{ "title": "qwerty", "authorId": 2, "genreId": 2 }'
+
+curl -v -X PUT http://localhost:8080/api/books/100 \
+   -H "Content-Type: application/json" \
+   -d '{ "title": "qwerty", "authorId": 2, "genreId": 2 }'
+
+curl -v -X DELETE http://localhost:8080/api/books/1
