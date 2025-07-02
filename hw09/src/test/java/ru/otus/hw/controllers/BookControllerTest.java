@@ -35,10 +35,10 @@ class BookControllerTest {
     private BookService bookService;
 
     @MockitoBean
-    AuthorService authorService;
+    private AuthorService authorService;
 
     @MockitoBean
-    GenreService genreService;
+    private GenreService genreService;
 
     private List<AuthorReadDto> authors = List.of(
             new AuthorReadDto(1L, "FullName1"),
