@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="keywords" th:content="${keywords}"/>
+    <title>List of all books</title>
+    <style type="text/css">
+        body {
+            padding: 50px;
+        }
+
+        .persons {
+            border: 1px solid steelblue;
+            width: 300px;
+            border-collapse: collapse;
+        }
+
+        .persons tr td, th {
+            padding: 5px;
+            border: 1px solid steelblue;
+        }
+
+        .persons td:last-child, td:first-child {
+            width: 50px;
+        }
+    </style>
+
+    <script>
+        window.onload = function() {
+            fetch('/api/books')
+            .then(response => {
+              return response.json();
+            })
+            .then(data => {
+              var tableRef = document.getElementById('personsTable').getElementsByTagName('tbody')[0];
+              data.forEach(item => {
+                tableRef.insertRow().innerHTML =
+                "<tr>" +
+                "<td>" + item.id + "</td>"+
+                "<td>" + item.title + "</td>"+
+                "<td>" + item.author.fullName + "</td>"+
+                "<td>" + item.genre.name + "</td>"+
+                "<td>" + "<a href = '/books?id=" + item.id +"'>Edit</a>" + "</td>"+
+                "</tr>";
+              });
+            });
+        };
+    </script>
+</head>
+<body>
+<h3>Books:</h3>
+
+<table class="persons" id="personsTable">
+    <thead>
+    <tr>
+        <th>ID</th>
+        <th>Title</th>
+        <th>Author</th>
+        <th>Genre</th>
+        <th>Action</th>
+    </tr>
+    </thead>
+    <tbody>
+    </tbody>
+</table>
+<div class="row">
+    <a href = "registration.html" th:href = "@{/books/registration}"><button type="button">New Book</button></a>
+</div>
+
+</body>
