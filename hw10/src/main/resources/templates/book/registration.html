@@ -30,14 +30,14 @@
             const authorValue = authorSelect.options[authorSelect.selectedIndex].value
             const genreSelect = document.getElementById("genre-select")
             const genreValue = genreSelect.options[genreSelect.selectedIndex].value
-            const person = { title: titleInput.value, authorId: authorValue, genreId: genreValue}
+            const book = { title: titleInput.value, authorId: authorValue, genreId: genreValue}
             fetch("/api/books", {
                 method: 'POST',
                 headers: {
                   'Accept': 'application/json',
                   'Content-Type': 'application/json'
                 },
-                body: JSON.stringify(person)})
+                body: JSON.stringify(book)})
             .then(rawResponse => rawResponse.json())
             .then(json => savedBookContainer.innerHTML = JSON.stringify(json, null, 4))
         }

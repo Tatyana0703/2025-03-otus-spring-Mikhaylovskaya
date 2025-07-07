@@ -35,7 +35,7 @@ public class CommentServiceImpl implements CommentService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<CommentReadDto> findByBookId(long bookId) {
+    public List<CommentReadDto> findAllByBookId(long bookId) {
         Book book = bookRepository.findById(bookId)
                 .orElseThrow(() -> new NotFoundException("Book with id %d not found".formatted(bookId)));
         return commentRepository.findAllByBookId(book.getId()).stream()

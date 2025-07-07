@@ -8,4 +8,6 @@ public class CommentReadDto {
     private long id;
 
     private String text;
+
+    private long bookId;
 }

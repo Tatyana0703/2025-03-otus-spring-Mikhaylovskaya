@@ -10,7 +10,8 @@ public class CommentReadMapper {
     public CommentReadDto map(Comment object) {
         return new CommentReadDto(
                 object.getId(),
-                object.getText()
+                object.getText(),
+                object.getBook().getId()
         );
     }
 }

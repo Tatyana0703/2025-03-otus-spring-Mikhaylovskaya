@@ -8,7 +8,7 @@ import java.util.Optional;
 public interface CommentService {
     Optional<CommentReadDto> findById(long id);
 
-    List<CommentReadDto> findByBookId(long bookId);
+    List<CommentReadDto> findAllByBookId(long bookId);
 
     CommentReadDto create(CommentCreateEditDto commentDto);
 
