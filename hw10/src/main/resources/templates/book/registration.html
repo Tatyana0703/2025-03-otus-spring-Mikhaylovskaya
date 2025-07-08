@@ -24,7 +24,6 @@
 
     <script>
         function saveBook() {
-            const savedBookContainer = document.getElementById("saved-book")
             const titleInput = document.getElementById("title-input")
             const authorSelect = document.getElementById("author-select")
             const authorValue = authorSelect.options[authorSelect.selectedIndex].value
@@ -38,8 +37,7 @@
                   'Content-Type': 'application/json'
                 },
                 body: JSON.stringify(book)})
-            .then(rawResponse => rawResponse.json())
-            .then(json => savedBookContainer.innerHTML = JSON.stringify(json, null, 4))
+            setTimeout(function() {window.location.assign("/books")}, 1000)
         }
 
         window.onload = function() {
@@ -99,9 +97,6 @@
         <a href="list.html" th:href="@{/books}"><button type="button">Go Back</button></a>
     </div>
 </form>
-
-<h3>Saved book:</h3>
-<pre id = "saved-book"></pre>
 
 </body>
 </html>
