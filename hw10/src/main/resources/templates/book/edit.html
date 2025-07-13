@@ -39,7 +39,7 @@
                   'Content-Type': 'application/json'
                 },
                 body: JSON.stringify(book)})
-            setTimeout(function() {window.location.assign("/books")}, 1000)
+            .then(rawResponse => window.location.assign("/books"))
         }
     </script>
 
@@ -53,7 +53,7 @@
                   'Accept': 'application/json',
                   'Content-Type': 'application/json'
                 }})
-            setTimeout(function() {window.location.assign("/books")}, 1000)
+            .then(rawResponse => window.location.assign("/books"))
         }
     </script>
 
