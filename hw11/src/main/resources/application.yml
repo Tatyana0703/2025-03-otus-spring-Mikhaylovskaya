@@ -1,0 +1,19 @@
+server:
+  port: 8080
+
+spring:
+  r2dbc:
+    url: r2dbc:h2:mem:///maindb
+    username: sa
+    password: password
+    pool:
+      enabled: true
+  sql:
+    init:
+      mode: always
+      schema-locations: classpath:schema.sql
+      data-locations: classpath:data.sql
+
+logging:
+  level:
+    ROOT: INFO
