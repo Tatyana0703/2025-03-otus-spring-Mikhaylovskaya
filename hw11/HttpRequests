@@ -40,4 +40,4 @@ curl -v -X PUT http://localhost:8080/api/comments/1 \
    -H "Content-Type: application/json" \
    -d '{ "text": "qwerty", "bookId": 100 }'
 
-curl -v DELETE http://localhost:8080/api/books/1
+curl -v DELETE http://localhost:8080/api/comments/1

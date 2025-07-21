@@ -46,10 +46,7 @@ public class CommentServiceImpl implements CommentService {
         Mono<Book> bookMono = bookRepository.findById(commentDto.getBookId())
                 .switchIfEmpty(Mono.error(
                         new NotFoundException("Book with id %d not found".formatted(comment.getBookId()))));
-        return bookMono.flatMap(value ->
-                commentRepository.save(comment).flatMap(savedComment ->
-                        Mono.just(commentReadMapper.map(savedComment)))
-        );
+        return bookMono.flatMap(value -> commentRepository.save(comment).map(commentReadMapper::map));
     }
 
     @Override
@@ -65,8 +62,7 @@ public class CommentServiceImpl implements CommentService {
         return Mono.zip(commentMono, bookMono).flatMap(value -> {
             value.getT1().setText(commentDto.getText());
             value.getT1().setBookId(commentDto.getBookId());
-            return commentRepository.save(value.getT1()).flatMap(savedComment ->
-                    Mono.just(commentReadMapper.map(savedComment)));
+            return commentRepository.save(value.getT1()).map(commentReadMapper::map);
         });
     }
 

@@ -9,9 +9,9 @@ import org.springframework.data.r2dbc.core.R2dbcEntityTemplate;
 import org.springframework.stereotype.Repository;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
-import ru.otus.hw.dto.AuthorReadDto;
-import ru.otus.hw.dto.BookReadDto;
-import ru.otus.hw.dto.GenreReadDto;
+import ru.otus.hw.models.projections.AuthorProjection;
+import ru.otus.hw.models.projections.BookProjection;
+import ru.otus.hw.models.projections.GenreProjection;
 
 @Repository
 @RequiredArgsConstructor
@@ -19,7 +19,7 @@ public class BookRepositoryCustomImpl implements BookRepositoryCustom {
 
     private final R2dbcEntityTemplate template;
 
-    public Flux<BookReadDto> findAllCustom() {
+    public Flux<BookProjection> findAllCustom() {
         return template.getDatabaseClient().inConnectionMany(connection ->
                 Flux.from(connection.createStatement("""
                         SELECT b.id as book_id, b.title as book_title,
@@ -32,7 +32,7 @@ public class BookRepositoryCustomImpl implements BookRepositoryCustom {
                         .flatMap(result -> result.map(this::mapper)));
     }
 
-    public Mono<BookReadDto> findByIdCustom(Long id) {
+    public Mono<BookProjection> findByIdCustom(Long id) {
         return template.getDatabaseClient().inConnection(connection ->
                 Mono.from(connection.createStatement("""
                         SELECT b.id as book_id, b.title as book_title,
@@ -48,20 +48,20 @@ public class BookRepositoryCustomImpl implements BookRepositoryCustom {
                         .flatMap(result -> Mono.from(result.map(this::mapper))));
     }
 
-    private BookReadDto mapper(Readable selectedRecord) {
-        AuthorReadDto authorDto = AuthorReadDto.builder()
+    private BookProjection mapper(Readable selectedRecord) {
+        AuthorProjection author = AuthorProjection.builder()
                 .id(selectedRecord.get("author_id", Long.class))
                 .fullName(selectedRecord.get("author_full_name", String.class))
                 .build();
-        GenreReadDto genreDto = GenreReadDto.builder()
+        GenreProjection genre = GenreProjection.builder()
                 .id(selectedRecord.get("genre_id", Long.class))
                 .name(selectedRecord.get("genre_name", String.class))
                 .build();
-        return BookReadDto.builder()
+        return BookProjection.builder()
                 .id(selectedRecord.get("book_id", Long.class))
                 .title(selectedRecord.get("book_title", String.class))
-                .author(authorDto)
-                .genre(genreDto)
+                .author(author)
+                .genre(genre)
                 .build();
     }
 }

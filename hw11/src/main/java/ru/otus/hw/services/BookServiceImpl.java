@@ -33,12 +33,12 @@ public class BookServiceImpl implements BookService {
 
     @Override
     public Mono<BookReadDto> findById(Long id) {
-        return bookRepository.findByIdCustom(id);
+        return bookRepository.findByIdCustom(id).map(bookReadMapper::map);
     }
 
     @Override
     public Flux<BookReadDto> findAll() {
-        return bookRepository.findAllCustom();
+        return bookRepository.findAllCustom().map(bookReadMapper::map);
     }
 
     @Override
@@ -51,10 +51,9 @@ public class BookServiceImpl implements BookService {
         Mono<Genre> genreMono = genreRepository.findById(book.getGenreId())
                 .switchIfEmpty(Mono.error(
                         new NotFoundException("Genre with id %d not found".formatted(book.getGenreId()))));
-        return Mono.zip(authorMono, genreMono).flatMap(value ->
-                bookRepository.save(book).flatMap(savedBook ->
-                    Mono.just(bookReadMapper.map(savedBook, value.getT1(), value.getT2())))
-        );
+        return Mono.zip(authorMono, genreMono)
+                .flatMap(value -> bookRepository.save(book)
+                        .map(savedBook -> bookReadMapper.map(savedBook, value.getT1(), value.getT2())));
     }
 
     @Override
@@ -72,8 +71,8 @@ public class BookServiceImpl implements BookService {
                 value.getT1().setTitle(bookDto.getTitle());
                 value.getT1().setAuthorId(value.getT2().getId());
                 value.getT1().setGenreId(value.getT3().getId());
-                return bookRepository.save(value.getT1()).flatMap(savedBook ->
-                        Mono.just(bookReadMapper.map(savedBook, value.getT2(), value.getT3())));
+                return bookRepository.save(value.getT1())
+                        .map(savedBook -> bookReadMapper.map(savedBook, value.getT2(), value.getT3()));
         });
     }
 
