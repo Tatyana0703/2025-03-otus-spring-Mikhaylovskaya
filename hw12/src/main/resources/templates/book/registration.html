@@ -29,7 +29,7 @@
                     th:selected="${genre.id == book.genreId}"
                     th:text="${genre.name}">Genre</option>
         </select>
-    </label>
+    </label><br>
     <button type="submit">Save</button>
 </form>
 <a href="list.html" th:href="@{/books}"><button type="button">To Book List</button></a>

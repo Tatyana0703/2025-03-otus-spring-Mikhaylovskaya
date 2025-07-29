@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import ru.otus.hw.dto.UserCreateEditDto;
+import ru.otus.hw.services.RoleService;
 import ru.otus.hw.services.UserService;
 
 @Controller
@@ -18,6 +19,8 @@ public class UserController {
 
     private final UserService userService;
 
+    private final RoleService roleService;
+
     @GetMapping("/login")
     public String loginPage() {
         return "user/login";
@@ -25,7 +28,8 @@ public class UserController {
 
     @GetMapping("/users/registration")
     public String register(Model model, @ModelAttribute("user") UserCreateEditDto userDto) {
-            model.addAttribute("user", userDto);
+        model.addAttribute("user", userDto);
+        model.addAttribute("roles", roleService.findAll());
         return "/user/registration";
     }
 

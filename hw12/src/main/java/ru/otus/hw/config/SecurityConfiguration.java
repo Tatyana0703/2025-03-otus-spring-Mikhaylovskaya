@@ -6,8 +6,6 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.factory.PasswordEncoderFactories;
-import org.springframework.security.crypto.password.DelegatingPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
@@ -27,9 +25,9 @@ public class SecurityConfiguration {
                 .authorizeHttpRequests(authorize -> authorize
                         .requestMatchers(GET, "/", "/login", "/users/registration").permitAll()
                         .requestMatchers(POST, "/users").permitAll()
-                        .requestMatchers(GET, "/books", "/books/*", "/authors", "/genres", "/comments/**")
-                        .authenticated()
-                        .requestMatchers(POST, "/books", "/books/**").authenticated()
+                        .requestMatchers("/books", "/books/**", "/authors", "/genres", "/comments/**")
+                                .authenticated()
+                        .anyRequest().denyAll()
                 )
                 .formLogin(login -> login
                         .loginPage("/login")
@@ -42,9 +40,6 @@ public class SecurityConfiguration {
 
     @Bean
     public PasswordEncoder passwordEncoder() {
-        DelegatingPasswordEncoder delegatingPasswordEncoder =
-                (DelegatingPasswordEncoder) PasswordEncoderFactories.createDelegatingPasswordEncoder();
-        delegatingPasswordEncoder.setDefaultPasswordEncoderForMatches(new BCryptPasswordEncoder());
-        return delegatingPasswordEncoder;
+        return new BCryptPasswordEncoder(10);
     }
 }

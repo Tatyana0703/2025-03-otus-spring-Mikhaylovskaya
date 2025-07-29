@@ -25,10 +25,16 @@ create table comments (
     primary key (id)
 );
 
+create table roles (
+    id serial,
+    name varchar(32),
+    primary key (id)
+);
+
 create table users (
     id bigserial,
     username varchar(64) not null unique,
     password varchar(128),
-    role varchar(32),
+    role_id int references roles (id),
     primary key (id)
 );

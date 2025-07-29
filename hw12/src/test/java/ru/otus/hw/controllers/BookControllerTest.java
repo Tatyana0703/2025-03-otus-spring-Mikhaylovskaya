@@ -13,6 +13,7 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 import ru.otus.hw.config.SecurityConfiguration;
 import ru.otus.hw.dto.AuthorReadDto;
 import ru.otus.hw.dto.BookCreateEditDto;
@@ -24,12 +25,11 @@ import ru.otus.hw.services.BookService;
 import ru.otus.hw.services.GenreService;
 import java.util.List;
 import java.util.Optional;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.model;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.view;
 
 @DisplayName("Контроллер для работы с книгами ")
-@WebMvcTest(BookController.class)
-@Import({SecurityConfiguration.class})
+@WebMvcTest(controllers = BookController.class)
+@Import(SecurityConfiguration.class)
+@WithMockUser
 class BookControllerTest {
 
     @Autowired
@@ -39,10 +39,10 @@ class BookControllerTest {
     private BookService bookService;
 
     @MockitoBean
-    AuthorService authorService;
+    private AuthorService authorService;
 
     @MockitoBean
-    GenreService genreService;
+    private GenreService genreService;
 
     private final List<AuthorReadDto> authors = List.of(
             new AuthorReadDto(1L, "FullName1"),
@@ -55,16 +55,15 @@ class BookControllerTest {
             new BookReadDto(2L, "TestTitle2",  authors.get(1), genres.get(1)));
 
     @Test
-    @WithMockUser
     void shouldRenderListPageWithCorrectViewAndModelAttributes() throws Exception {
         when(bookService.findAll()).thenReturn(books);
         mvc.perform(get("/books"))
+                .andExpect(status().is2xxSuccessful())
                 .andExpect(view().name("book/list"))
                 .andExpect(model().attribute("books", books));
     }
 
     @Test
-    @WithMockUser
     void shouldRenderEditPageWithCorrectViewAndModelAttributes() throws Exception {
         BookReadDto book = books.get(0);
         when(bookService.findById(1L)).thenReturn(Optional.of(book));
@@ -78,36 +77,35 @@ class BookControllerTest {
     }
 
     @Test
-    @WithMockUser
     void shouldRenderErrorPageWhenBookNotFound() throws Exception {
         when(bookService.findById(1L)).thenThrow(new NotFoundException(anyString()));
         mvc.perform(get("/books/1"))
+                .andExpect(status().is2xxSuccessful())
                 .andExpect(view().name("error/customError"));
     }
 
     @Test
-    @WithMockUser
     void shouldSaveBookAndRedirectToContextPath() throws Exception {
         mvc.perform(post("/books")
                         .param(BookCreateEditDto.Fields.title, "Book Test Title")
                         .param(BookCreateEditDto.Fields.authorId, String.valueOf(authors.get(0).getId()))
                         .param(BookCreateEditDto.Fields.genreId, String.valueOf(genres.get(0).getId())))
+                .andExpect(status().is3xxRedirection())
                 .andExpect(view().name("redirect:/books"));
         verify(bookService, times(1))
                 .create(new BookCreateEditDto("Book Test Title", authors.get(0).getId(), genres.get(0).getId()));
     }
 
     @Test
-    @WithMockUser
     void shouldRenderRegistrationPageWhenCreateParamsNotValid() throws Exception {
         mvc.perform(post("/books")
                         .param(BookCreateEditDto.Fields.title, ""))
+                .andExpect(status().is3xxRedirection())
                 .andExpect(view().name("redirect:/books/registration"));
         verifyNoInteractions(bookService);
     }
 
     @Test
-    @WithMockUser
     void shouldUpdateBookAndRedirectToContextPath() throws Exception {
         BookReadDto book = books.get(0);
         when(bookService.update(anyLong(), any(BookCreateEditDto.class))).thenReturn(book);
@@ -115,6 +113,7 @@ class BookControllerTest {
                         .param(BookCreateEditDto.Fields.title, "Updated Book Test Title")
                         .param(BookCreateEditDto.Fields.authorId, String.valueOf(authors.get(0).getId()))
                         .param(BookCreateEditDto.Fields.genreId, String.valueOf(genres.get(1).getId())))
+                .andExpect(status().is3xxRedirection())
                 .andExpect(view().name("redirect:/books"));
         verify(bookService, times(1))
                 .update(1L, new BookCreateEditDto("Updated Book Test Title",
@@ -122,18 +121,18 @@ class BookControllerTest {
     }
 
     @Test
-    @WithMockUser
     void shouldRenderEditPageWhenUpdateParamsNotValid() throws Exception {
         mvc.perform(post("/books/1/update")
                         .param(BookCreateEditDto.Fields.title, ""))
+                .andExpect(status().is3xxRedirection())
                 .andExpect(view().name("redirect:/books/1"));
         verifyNoInteractions(bookService);
     }
 
     @Test
-    @WithMockUser
     void shouldDeleteBookAndRedirectToContextPath() throws Exception {
         mvc.perform(post("/books/1/delete"))
+                .andExpect(status().is3xxRedirection())
                 .andExpect(view().name("redirect:/books"));
         verify(bookService, times(1)).deleteById(1L);
     }

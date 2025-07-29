@@ -6,6 +6,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import ru.otus.hw.dto.Authority;
 import ru.otus.hw.dto.UserCreateEditDto;
 import ru.otus.hw.dto.UserDetailsDto;
 import ru.otus.hw.dto.UserReadDto;
@@ -31,7 +32,7 @@ public class UserServiceImpl implements UserDetailsService, UserService {
                 .map(user -> new UserDetailsDto(
                         user.getUsername(),
                         user.getPassword(),
-                        Collections.singleton(user.getRole())
+                        Collections.singleton(new Authority(user.getRole().getName()))
                 ))
                 .orElseThrow(() -> new UsernameNotFoundException("Failed to retrieve user: %s".formatted(username)));
     }

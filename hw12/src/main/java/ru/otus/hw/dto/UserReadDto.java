@@ -1,7 +1,6 @@
 package ru.otus.hw.dto;
 
 import lombok.Value;
-import ru.otus.hw.models.Role;
 
 @Value
 public class UserReadDto {
@@ -10,5 +9,5 @@ public class UserReadDto {
 
     private String username;
 
-    private Role role;
+    private RoleReadDto role;
 }

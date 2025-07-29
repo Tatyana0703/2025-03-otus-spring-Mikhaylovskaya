@@ -3,6 +3,7 @@ delete from books;
 delete from authors;
 delete from genres;
 delete from users;
+delete from roles;
 
 set @author1 = select id from final table (insert into authors (full_name) values ('Test_Author_1'));
 set @author2 = select id from final table (insert into authors (full_name) values ('Test_Author_2'));
@@ -21,3 +22,8 @@ values ('Test_Comment_1', @book1),
        ('Test_Comment_2', @book1),
        ('Test_Comment_3', @book2),
        ('Test_Comment_4', @book3);
+
+set @role1 = select id from final table (insert into roles(name) values ('USER'));
+
+insert into users(username, password, role_id)
+values ('test_username', 'test_password', @role1);

@@ -10,5 +10,8 @@ values ('BookTitle_1', 1, 1), ('BookTitle_2', 2, 2), ('BookTitle_3', 3, 3);
 insert into comments(text, book_id)
 values ('Comment_1', 1), ('Comment_2', 1), ('Comment_3', 2), ('Comment_4', 3);
 
-insert into users(username, password, role)
-values ('test_username', '{bcrypt}$2a$10$8tWV9gktsst6SuSv.ipbwOIHzY1CfCF6dTXT546WIQs.TFzroW.zm', 'USER');  --password=123
+insert into roles(name)
+values ('USER');
+
+insert into users(username, password, role_id)
+values ('test_username', '$2a$10$Zmmi5N0.O5FBl5CIZTPWWOf0aSIkKHzkeoLKRNOLC1SPUjv65udvW', 1);  --password=123
