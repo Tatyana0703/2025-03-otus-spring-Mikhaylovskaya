@@ -5,7 +5,6 @@ import org.springframework.stereotype.Service;
 import ru.otus.hw.dto.RoleReadDto;
 import ru.otus.hw.mappers.RoleReadMapper;
 import ru.otus.hw.repositories.RoleRepository;
-
 import java.util.List;
 
 @RequiredArgsConstructor

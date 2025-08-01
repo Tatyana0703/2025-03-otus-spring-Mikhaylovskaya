@@ -6,11 +6,12 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.DelegatingPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
-import static org.springframework.http.HttpMethod.GET;
-import static org.springframework.http.HttpMethod.POST;
+import java.util.HashMap;
+import java.util.Map;
 
 @Configuration
 @EnableWebSecurity
@@ -23,15 +24,15 @@ public class SecurityConfiguration {
                 .sessionManagement(session -> session
                         .sessionCreationPolicy(SessionCreationPolicy.ALWAYS))
                 .authorizeHttpRequests(authorize -> authorize
-                        .requestMatchers(GET, "/", "/login", "/users/registration").permitAll()
-                        .requestMatchers(POST, "/users").permitAll()
-                        .requestMatchers("/books", "/books/**", "/authors", "/genres", "/comments/**")
-                                .authenticated()
+                        .requestMatchers("/", "/login", "/users/registration").permitAll()
+                        .requestMatchers("/users").permitAll()
+                        .requestMatchers("/books", "/books?continue", "/books/**", "/authors", "/genres",
+                                "/comments/**", "/error?continue").authenticated()
                         .anyRequest().denyAll()
                 )
                 .formLogin(login -> login
                         .loginPage("/login")
-                        .defaultSuccessUrl("/books"))
+                        .defaultSuccessUrl("/books?continue"))
                 .logout(logout -> logout
                         .logoutUrl("/logout")
                         .logoutSuccessUrl("/login"));
@@ -40,6 +41,12 @@ public class SecurityConfiguration {
 
     @Bean
     public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder(10);
+        String encoderType = "bcrypt";
+        Map<String, PasswordEncoder> encoders = new HashMap<>();
+        encoders.put(encoderType, new BCryptPasswordEncoder(10));
+        DelegatingPasswordEncoder passwordEncoder = new DelegatingPasswordEncoder(encoderType, encoders);
+        passwordEncoder.setDefaultPasswordEncoderForMatches(encoders.get(encoderType));
+
+        return passwordEncoder;
     }
 }

@@ -9,8 +9,7 @@
     <span>Username: </span>
     <span th:text="${#authentication.principal.username}">Username</span><br>
     <span>Authority: </span>
-<!--    <span th:text="${#authentication.principal.authorities[0].role}">Authorities</span>-->
-    <span th:text="${#authentication.principal.authorities[0].getAuthority()}">Authorities</span>
+    <span th:text="${#authentication.principal.authorities}">Authorities</span>
     <form th:action="@{/logout}" method="post">
         <button type="submit">Logout</button>
     </form>

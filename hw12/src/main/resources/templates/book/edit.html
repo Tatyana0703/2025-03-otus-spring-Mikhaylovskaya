@@ -3,6 +3,24 @@
 <head>
     <meta charset="UTF-8"/>
     <title>Book</title>
+    <style type="text/css">
+        body {
+            padding: 50px;
+        }
+
+        label {
+            display: inline-block;
+            width: 100px;
+        }
+
+        input:read-only {
+            background: lightgray;
+        }
+
+        .row {
+            margin-top: 10px;
+        }
+    </style>
 </head>
 <body>
 
@@ -32,12 +50,12 @@
                     th:selected="${genre.id == book.genre.id}"
                     th:text="${genre.name}">Genre</option>
         </select>
-    </label><br>
+    </label><br><br>
     <button type="submit">Update</button>
-</form>
+</form><br>
 <form th:action="@{/books/{bookId}/delete(bookId=${book.id})}" method="post">
     <button type="submit">Remove</button>
-</form>
+</form><br>
 <a href="list.html" th:href="@{/books}"><button type="button">To Book List</button></a>
 <div th:if="${errors}">
     <p style="color: red" th:each="error : ${errors}" th:text="|${error.field} ${error.defaultMessage}|">Error message</p>

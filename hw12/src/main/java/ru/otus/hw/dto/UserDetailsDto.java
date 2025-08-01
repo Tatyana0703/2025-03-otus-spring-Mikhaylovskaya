@@ -4,7 +4,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import java.util.Collection;
-import java.util.Set;
 
 @RequiredArgsConstructor
 public class UserDetailsDto implements UserDetails {
@@ -13,7 +12,7 @@ public class UserDetailsDto implements UserDetails {
 
     private final String password;
 
-    private final Set<GrantedAuthority> authorities;
+    private final Collection<? extends GrantedAuthority> authorities;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

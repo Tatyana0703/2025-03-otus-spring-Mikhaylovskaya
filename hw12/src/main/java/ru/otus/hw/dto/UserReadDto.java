@@ -1,6 +1,7 @@
 package ru.otus.hw.dto;
 
 import lombok.Value;
+import java.util.Set;
 
 @Value
 public class UserReadDto {
@@ -9,5 +10,5 @@ public class UserReadDto {
 
     private String username;
 
-    private RoleReadDto role;
+    private Set<RoleReadDto> roles;
 }

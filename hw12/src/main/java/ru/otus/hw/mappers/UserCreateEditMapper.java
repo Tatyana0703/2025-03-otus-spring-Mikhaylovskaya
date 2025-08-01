@@ -3,13 +3,11 @@ package ru.otus.hw.mappers;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
-import org.springframework.util.StringUtils;
 import ru.otus.hw.dto.UserCreateEditDto;
 import ru.otus.hw.exceptions.NotFoundException;
 import ru.otus.hw.models.Role;
 import ru.otus.hw.models.User;
 import ru.otus.hw.repositories.RoleRepository;
-
 import java.util.Optional;
 
 @Component
@@ -32,14 +30,15 @@ public class UserCreateEditMapper {
     }
 
     private void copy(UserCreateEditDto userDto, User user) {
-        Role role = roleRepository.findById(userDto.getRoleId())
-                .orElseThrow(() -> new NotFoundException("Role with id %d not found"
-                        .formatted(userDto.getRoleId())));
+        userDto.getRoleIds().forEach(roleId -> {
+            Role role = roleRepository.findById(roleId).orElseThrow(() ->
+                    new NotFoundException("Role with id %d not found".formatted(roleId)));
+            user.addRole(role);
+        });
         user.setUsername(userDto.getUsername());
-        user.setRole(role);
-        Optional.ofNullable(userDto.getRawPassword())
-                .filter(StringUtils::hasText)
-                .map(passwordEncoder::encode)
-                .ifPresent(user::setPassword);
+        String password = Optional.of(userDto.getRawPassword()).map(passwordEncoder::encode)
+                .orElseThrow(() -> new NotFoundException("User password not found for username %s"
+                        .formatted(userDto.getUsername())));
+        user.setPassword(password);
     }
 }

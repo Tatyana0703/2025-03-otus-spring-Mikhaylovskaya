@@ -2,7 +2,27 @@
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8"/>
-    <title>List of all authors</title>
+    <title>List of all comments</title>
+    <style type="text/css">
+        body {
+            padding: 50px;
+        }
+
+        .comments {
+            border: 1px solid steelblue;
+            width: 300px;
+            border-collapse: collapse;
+        }
+
+        .comments tr td, th {
+            padding: 5px;
+            border: 1px solid steelblue;
+        }
+
+        .comments td:last-child, td:first-child {
+            width: 50px;
+        }
+    </style>
 </head>
 <body>
 

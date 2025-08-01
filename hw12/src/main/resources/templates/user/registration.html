@@ -3,6 +3,24 @@
 <head>
     <meta charset="UTF-8">
     <title>User registration</title>
+    <style type="text/css">
+        body {
+            padding: 50px;
+        }
+
+        label {
+            display: inline-block;
+            width: 100px;
+        }
+
+        input:read-only {
+            background: lightgray;
+        }
+
+        .row {
+            margin-top: 10px;
+        }
+    </style>
 </head>
 <body>
 <form th:action="@{/users}" method="post" th:object="${user}">
@@ -13,13 +31,13 @@
         <input id="rawPassword" type="password" name="rawPassword">
     </label><br>
     <label for="role">Role:
-        <select id="role" name="roleId">
+        <select id="role" th:field="*{roleIds}" multiple="multiple">
             <option th:each="role : ${roles}"
-                    th:value="${role.id}"
-                    th:selected="${role.id == user.roleId}"
+                    th:value="${{role.id}}"
+                    th:selected="${user.roleIds != null and #lists.contains(roleIds, role.id)}"
                     th:text="${role.name}">Role</option>
         </select>
-    </label><br>
+    </label><br><br>
     <button type="submit">Register</button>
 </form>
 <div th:if="${errors}">
