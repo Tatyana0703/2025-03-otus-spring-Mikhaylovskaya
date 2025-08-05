@@ -1,4 +1,4 @@
-package ru.otus.hw.dto;
+package ru.otus.hw.security;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
@@ -6,7 +6,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import java.util.Collection;
 
 @RequiredArgsConstructor
-public class UserDetailsDto implements UserDetails {
+public class SecurityUserDetails implements UserDetails {
 
     private final String username;
 
@@ -49,3 +49,4 @@ public class UserDetailsDto implements UserDetails {
         return true;
     }
 }
+

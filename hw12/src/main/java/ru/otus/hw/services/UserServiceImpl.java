@@ -8,7 +8,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.otus.hw.dto.UserCreateEditDto;
-import ru.otus.hw.dto.UserDetailsDto;
+import ru.otus.hw.security.SecurityUserDetails;
 import ru.otus.hw.dto.UserReadDto;
 import ru.otus.hw.mappers.UserCreateEditMapper;
 import ru.otus.hw.mappers.UserReadMapper;
@@ -31,7 +31,7 @@ public class UserServiceImpl implements UserDetailsService, UserService {
     @Transactional(readOnly = true)
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         return userRepository.findByUsername(username)
-                .map(user -> new UserDetailsDto(
+                .map(user -> new SecurityUserDetails(
                         user.getUsername(),
                         user.getPassword(),
                         user.getRoles().stream()
