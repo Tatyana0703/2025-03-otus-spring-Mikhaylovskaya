@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>New Comment</title>
+    <style type="text/css">
+        body {
+            padding: 50px;
+        }
+
+        label {
+            display: inline-block;
+            width: 100px;
+        }
+
+        input:read-only {
+            background: lightgray;
+        }
+
+        .row {
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+
+<div th:insert="~{fragment :: header}"></div><br>
+
+<h3>Comment:</h3>
+
+<form th:action="@{/comments}" method="post" th:object="${comment}">
+    <label for="bookId">Book ID:
+        <input id="bookId" type="text" readonly="readonly" name="bookId" th:value="*{bookId}">
+    </label><br>
+    <label for="text">Text:
+        <input id="text" type="text" name="text" th:value="*{text}">
+    </label><br><br>
+    <button type="submit">Save</button>
+</form><br>
+<a href="list.html" th:href="@{/books}"><button type="button">To Book List</button></a>
+<div th:if="${errors}">
+    <p style="color: red" th:each="error : ${errors}" th:text="|${error.field} ${error.defaultMessage}|">Error message</p>
+</div>
+</body>
+</html>
