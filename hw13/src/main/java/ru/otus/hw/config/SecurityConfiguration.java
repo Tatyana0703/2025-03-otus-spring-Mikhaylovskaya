@@ -27,7 +27,7 @@ public class SecurityConfiguration {
                         .sessionCreationPolicy(SessionCreationPolicy.ALWAYS))
                 .authorizeHttpRequests(authorize -> authorize
                         .requestMatchers("/", "/login", "/users/registration", "/users").permitAll()
-                        .anyRequest().authenticated()
+                        .anyRequest().hasAnyAuthority("ROLE_TEST1", "ROLE_TEST2")
                 )
                 .formLogin(login -> login
                         .loginPage("/login")

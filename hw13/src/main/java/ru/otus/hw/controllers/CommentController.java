@@ -59,7 +59,7 @@ public class CommentController {
         return "redirect:/comments?bookId=" + comment.getBookId();
     }
 
-    @PreAuthorize("@commentServiceImpl.checkCommentOwner(#id, principal)")
+    @PreAuthorize("principal.username == @commentServiceImpl.getCommentAuthorNameById(#id)")
     @PostMapping("/comments/{id}/update")
     public String update(@PathVariable("id") long id, @ModelAttribute @Valid CommentCreateEditDto commentDto,
                          BindingResult bindingResult, RedirectAttributes redirectAttributes,
@@ -72,7 +72,7 @@ public class CommentController {
         return "redirect:/comments?bookId=" + comment.getBookId();
     }
 
-    @PreAuthorize("@commentServiceImpl.checkCommentOwner(#id, principal)")
+    @PreAuthorize("principal.username == @commentServiceImpl.getCommentAuthorNameById(#id)")
     @PostMapping("/comments/{id}/delete")
     public String delete(@PathVariable("id") long id) {
         CommentReadDto comment = commentService.findById(id)

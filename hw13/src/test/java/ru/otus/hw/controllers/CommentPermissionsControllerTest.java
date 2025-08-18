@@ -1,23 +1,28 @@
 package ru.otus.hw.controllers;
 
+import org.hamcrest.Matchers;
 import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.context.annotation.Import;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.ResultActions;
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import ru.otus.hw.config.SecurityConfiguration;
 import ru.otus.hw.dto.CommentCreateEditDto;
 import ru.otus.hw.dto.CommentReadDto;
 import ru.otus.hw.services.CommentService;
 import java.util.Optional;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyLong;
-import static org.mockito.Mockito.*;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import java.util.stream.Stream;
+import static java.util.Objects.nonNull;
+import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @DisplayName("Контроллер для работы с комментариями, методы с аннотацией PreAuthorize ")
@@ -31,68 +36,44 @@ class CommentPermissionsControllerTest {
     @MockitoBean(name = "commentServiceImpl")
     private CommentService commentService;
 
-    @Test
-    @WithMockUser
-    void shouldSuccessDeleteCommentIfPassPreAuthorize() throws Exception {
-        var commentId = 1L;
-        var bookId = 2L;
-        CommentReadDto commentReadDto = new CommentReadDto(commentId, "text", bookId, 3L);
-        when(commentService.checkCommentOwner(anyLong(), any(UserDetails.class))).thenReturn(true);
-        when(commentService.findById(1L)).thenReturn(Optional.of(commentReadDto));
-        mockMvc.perform(post("/comments/" + commentId +"/delete"))
-                .andExpect(status().is3xxRedirection())
-                .andExpect(view().name("redirect:/comments?bookId=" + bookId));
-        verify(commentService, times(1)).checkCommentOwner(eq(commentId), any(UserDetails.class));
-        verify(commentService, times(1)).findById(commentId);
-        verify(commentService, times(1)).deleteById(commentId);
+    @ParameterizedTest(name = "url {0} for user {1} should return {3} status")
+    @MethodSource("getData")
+    void shouldReturnExpectedStatus(String url, String userName, String[] roles,
+                                    int status, String redirectedUrl, boolean isCommentOwner) throws Exception {
+        var request = MockMvcRequestBuilders.post(url);
+        if (nonNull(userName)) {
+            request = request.with(user(userName).roles(roles));
+        }
+
+        if (isCommentOwner) {
+            when(commentService.getCommentAuthorNameById(anyLong())).thenReturn(userName);
+        } else {
+            when(commentService.getCommentAuthorNameById(anyLong())).thenReturn(null);
+        }
+        CommentReadDto commentReadDto = mock(CommentReadDto.class);
+        if (url.endsWith("/delete")) {
+            when(commentService.findById(anyLong())).thenReturn(Optional.of(commentReadDto));
+        }
+        if (url.endsWith("/update")) {
+            CommentCreateEditDto commentCreateEditDto = CommentCreateEditDto.builder().bookId(1L).text("comment").build();
+            when(commentService.update(anyLong(), eq(commentCreateEditDto), any())).thenReturn(commentReadDto);
+        }
+
+        ResultActions resultActions = mockMvc.perform(request).andExpect(status().is(status));
+        if (nonNull(redirectedUrl)) {
+            resultActions.andExpect(view().name(Matchers.matchesRegex(redirectedUrl)));
+        }
     }
 
-    @Test
-    @WithMockUser
-    void shouldNotDeleteCommentIfFailPreAuthorize() throws Exception {
-        var commentId = 1L;
-        when(commentService.checkCommentOwner(anyLong(), any(UserDetails.class))).thenReturn(false);
-        mockMvc.perform(post("/comments/"+ commentId + "/delete"))
-                .andExpect(view().name("error/accessDeniedError"));
-        verify(commentService, times(1)).checkCommentOwner(eq(commentId), any(UserDetails.class));
-        verifyNoMoreInteractions(commentService);
-    }
-
-    @Test
-    @WithMockUser
-    void shouldSuccessUpdateCommentIfPassPreAuthorize() throws Exception {
-        var commentId = 1L;
-        var bookId = 2L;
-        CommentCreateEditDto commentCreateEditDto = CommentCreateEditDto.builder().text("text updated").bookId(bookId).build();
-        CommentReadDto commentReadDto = new CommentReadDto(commentId, commentCreateEditDto.getText(), commentCreateEditDto.getBookId(), 3L);
-        when(commentService.checkCommentOwner(anyLong(), any(UserDetails.class))).thenReturn(true);
-        when(commentService.update(anyLong(), any(CommentCreateEditDto.class), any())).thenReturn(commentReadDto);
-
-        mockMvc.perform(post("/comments/"+ commentId + "/update")
-                    .param(CommentCreateEditDto.Fields.text, commentReadDto.getText())
-                    .param(CommentCreateEditDto.Fields.bookId, String.valueOf(commentCreateEditDto.getBookId())))
-                .andExpect(status().is3xxRedirection())
-                .andExpect(view().name("redirect:/comments?bookId=" + bookId));
-
-        verify(commentService, times(1)).checkCommentOwner(eq(commentId), any(UserDetails.class));
-        verify(commentService, times(1)).update(eq(commentId), eq(commentCreateEditDto), any(UserDetails.class));
-    }
-
-    @Test
-    @WithMockUser
-    void shouldNotUpdateCommentIfFailPreAuthorize() throws Exception {
-        var commentId = 1L;
-        var bookId = 2L;
-        CommentCreateEditDto commentCreateEditDto = CommentCreateEditDto.builder().text("text updated").bookId(bookId).build();
-        CommentReadDto commentReadDto = new CommentReadDto(commentId, commentCreateEditDto.getText(), commentCreateEditDto.getBookId(), 3L);
-        when(commentService.checkCommentOwner(anyLong(), any(UserDetails.class))).thenReturn(false);
-
-        mockMvc.perform(post("/comments/"+ commentId + "/update")
-                        .param(CommentCreateEditDto.Fields.text, commentReadDto.getText())
-                        .param(CommentCreateEditDto.Fields.bookId, String.valueOf(commentCreateEditDto.getBookId())))
-                .andExpect(view().name("error/accessDeniedError"));
-
-        verify(commentService, times(1)).checkCommentOwner(eq(commentId), any(UserDetails.class));
-        verifyNoMoreInteractions(commentService);
+    private static Stream<Arguments> getData() {
+        var username = "username";
+        var validRole = "TEST1";
+        return Stream.of(
+                Arguments.of("/comments/1/delete", username, new String[] {}, 403, null, false),
+                Arguments.of("/comments/1/delete", username, new String[] {validRole}, 302, "redirect:/comments\\?bookId=\\d+", true),
+                Arguments.of("/comments/1/delete", username, new String[] {validRole}, 403, "error/accessDeniedError", false),
+                Arguments.of("/comments/1/update", username, new String[] {}, 403, null, false),
+                Arguments.of("/comments/1/update", username, new String[] {validRole}, 302, "redirect:/comments/\\d+", true),
+                Arguments.of("/comments/1/update", username, new String[] {validRole}, 403, "error/accessDeniedError", false));
     }
 }

@@ -12,6 +12,7 @@ import org.springframework.test.context.jdbc.Sql;
 import ru.otus.hw.dto.BookReadDto;
 import ru.otus.hw.dto.CommentCreateEditDto;
 import ru.otus.hw.dto.CommentReadDto;
+import ru.otus.hw.repositories.CommentRepository;
 import ru.otus.hw.security.SecurityUserDetails;
 import java.util.Collections;
 import java.util.List;
@@ -28,6 +29,9 @@ class CommentServiceImplTest {
 
     @Autowired
     private BookService bookService;
+
+    @Autowired
+    private CommentRepository commentRepository;
 
     @DisplayName("должен загружать комментарий по id")
     @Test
@@ -115,25 +119,13 @@ class CommentServiceImplTest {
         assertThat(deletedComment).isEmpty();
     }
 
-    @DisplayName("должен возвращать true, если залогиненный пользователь является владельцем комментария ")
+    @DisplayName("должен возвращать имя пользователя являющегося владельцем комментария ")
     @Test
-    void shouldReturnTrueIfUserIsCommentOwner() {
+    void shouldReturnUsernameOfCommentOwner() {
         long bookId = bookService.findAll().get(0).getId();
-        long commentId = commentService.findAllByBookId(bookId).get(0).getId();
-        var username = "username_1";
-        UserDetails userDetails = new SecurityUserDetails(username, null, Collections.emptyList());
-        boolean returnResult = commentService.checkCommentOwner(commentId, userDetails);
-        assertThat(returnResult).isTrue();
-    }
-
-    @DisplayName("должен возвращать false, если залогиненный пользователь не является владельцем комментария ")
-    @Test
-    void shouldReturnFalseIfUserIsNotCommentOwner() {
-        long bookId = bookService.findAll().get(0).getId();
-        long commentId = commentService.findAllByBookId(bookId).get(0).getId();
-        var username = "username_2";
-        UserDetails userDetails = new SecurityUserDetails(username, null, Collections.emptyList());
-        boolean returnResult = commentService.checkCommentOwner(commentId, userDetails);
-        assertThat(returnResult).isFalse();
+        CommentReadDto commentReadDto = commentService.findAllByBookId(bookId).get(0);
+        String expectedUsername = commentRepository.findById(commentReadDto.getId()).get().getUser().getUsername();
+        String returnUsername = commentService.getCommentAuthorNameById(commentReadDto.getId());
+        assertThat(returnUsername).isEqualTo(expectedUsername);
     }
 }

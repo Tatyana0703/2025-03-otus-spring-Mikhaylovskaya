@@ -29,7 +29,7 @@ import java.util.Optional;
 @DisplayName("Контроллер для работы с книгами ")
 @WebMvcTest(controllers = BookController.class)
 @Import(SecurityConfiguration.class)
-@WithMockUser
+@WithMockUser(username = "test", roles = {"TEST1"})
 class BookControllerTest {
 
     @Autowired

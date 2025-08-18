@@ -18,5 +18,5 @@ public interface CommentService {
 
     void deleteById(long id);
 
-    boolean checkCommentOwner(long id, UserDetails userDetails);
+    String getCommentAuthorNameById(long id);
 }

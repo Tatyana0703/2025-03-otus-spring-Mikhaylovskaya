@@ -27,7 +27,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @DisplayName("Контроллер для работы с комментариями, методы без аннотации PreAuthorize ")
 @WebMvcTest(controllers = CommentController.class)
 @Import(SecurityConfiguration.class)
-@WithMockUser
+@WithMockUser(username = "test", roles = {"TEST1"})
 class CommentControllerTest {
 
     @Autowired

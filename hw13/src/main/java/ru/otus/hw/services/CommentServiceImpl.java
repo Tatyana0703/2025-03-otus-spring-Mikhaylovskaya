@@ -76,9 +76,8 @@ public class CommentServiceImpl implements CommentService {
 
     @Override
     @Transactional(readOnly = true)
-    public boolean checkCommentOwner(long id, UserDetails userDetails) {
-        Comment comment = commentRepository.findById(id)
+    public String getCommentAuthorNameById(long id) {
+        return commentRepository.findById(id).map(comment -> comment.getUser().getUsername())
                 .orElseThrow(() -> new NotFoundException("Comment with id %d not found".formatted(id)));
-        return comment.getUser().getUsername().equals(userDetails.getUsername());
     }
 }

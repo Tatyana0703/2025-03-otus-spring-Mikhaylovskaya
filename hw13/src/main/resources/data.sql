@@ -8,7 +8,7 @@ insert into books(title, author_id, genre_id)
 values ('BookTitle_1', 1, 1), ('BookTitle_2', 2, 2), ('BookTitle_3', 3, 3);
 
 insert into roles(name)
-values ('USER'), ('VIEW');
+values ('TEST1'), ('TEST2');
 
 insert into users(username, password)
 values ('username_1', '{bcrypt}$2a$10$kOcVSHsXzB4OEP.8drhPUe62OAX4z06/VqFYi9YdJWiMFrL7pEYFm'),  --password=123
