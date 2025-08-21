@@ -44,20 +44,11 @@ class CommentPermissionsControllerTest {
         if (nonNull(userName)) {
             request = request.with(user(userName).roles(roles));
         }
-
-        if (isCommentOwner) {
-            when(commentService.getCommentAuthorNameById(anyLong())).thenReturn(userName);
-        } else {
-            when(commentService.getCommentAuthorNameById(anyLong())).thenReturn(null);
-        }
+        when(commentService.getCommentAuthorNameById(anyLong())).thenReturn(isCommentOwner ? userName: null);
         CommentReadDto commentReadDto = mock(CommentReadDto.class);
-        if (url.endsWith("/delete")) {
-            when(commentService.findById(anyLong())).thenReturn(Optional.of(commentReadDto));
-        }
-        if (url.endsWith("/update")) {
-            CommentCreateEditDto commentCreateEditDto = CommentCreateEditDto.builder().bookId(1L).text("comment").build();
-            when(commentService.update(anyLong(), eq(commentCreateEditDto), any())).thenReturn(commentReadDto);
-        }
+        when(commentService.findById(anyLong())).thenReturn(Optional.of(commentReadDto));
+        CommentCreateEditDto commentCreateEditDto = CommentCreateEditDto.builder().bookId(1L).text("comment").build();
+        when(commentService.update(anyLong(), eq(commentCreateEditDto), any())).thenReturn(commentReadDto);
 
         ResultActions resultActions = mockMvc.perform(request).andExpect(status().is(status));
         if (nonNull(redirectedUrl)) {
