@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Login</title>
+    <style type="text/css">
+        body {
+            padding: 50px;
+        }
+
+        label {
+            display: inline-block;
+            width: 100px;
+        }
+
+        input:read-only {
+            background: lightgray;
+        }
+
+        .row {
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+<form th:action="@{/login}" method="post">
+    <div style="color: red" th:if="${param.error}">
+        Bad credentials
+    </div>
+    <label for="username">Username:
+        <input id="username" type="text" name="username">
+    </label><br>
+    <label for="password">Password:
+        <input id="password" type="password" name="password">
+    </label><br><br>
+    <button type="submit">Login</button>
+</form><br>
+<form action="/users/registration">
+    <button type="submit">Registration</button>
+</form>
+</body>
+</html>
